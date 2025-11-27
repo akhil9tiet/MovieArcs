@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animated D3 Chart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0f172a; /* Slate 900 */
+        color: #e2e8f0;
+      }
+
+      /* Custom Animation for Card Entrance */
+      @keyframes wipe-in-right-scale {
+        0% {
+          opacity: 0;
+          transform: scale(1.5);
+          /* Inset from left: 100% means hidden (clipped fully from left edge). 
+             Reveals as left inset decreases to 0. */
+          clip-path: inset(0 0 0 100%); 
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          clip-path: inset(0 0 0 0%);
+        }
+      }
+
+      /* Title Transform: Starts from center (translated right/down) and moves to top-left */
+      @keyframes title-slide-transform {
+        0% {
+          transform: translate(180px, 100px) scale(1.5); 
+        }
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+      }
+
+      /* Title Opacity: Fades in quickly (0.6s) */
+      @keyframes title-fade {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+
+      /* Legend Animations: Split for precise control */
+      @keyframes slide-up-transform {
+        0% { transform: translateY(40px); }
+        100% { transform: translateY(0); }
+      }
+      
+      @keyframes fade-in-ease-in {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+
+      .animate-card-entry {
+        /* cubic-bezier(0.16, 1, 0.3, 1) is a common "Ease Out Expo" / "Jitter" feel */
+        animation: wipe-in-right-scale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transform-origin: center center;
+        will-change: transform, clip-path, opacity;
+      }
+
+      .animate-title-slide {
+        /* 
+           Split animations:
+           1. Transform: 1.4s with exp easing (movement)
+           2. Opacity: 0.6s with ease-out (visibility) - finishes in half the time of card animation (1.2s)
+        */
+        animation: 
+            title-slide-transform 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+            title-fade 0.6s ease-out forwards;
+        transform-origin: center left;
+        will-change: transform, opacity;
+      }
+
+      .animate-legend-entry {
+        /* 
+           Combined animation:
+           - Slide up matches the smooth bezier of the card
+           - Opacity uses 'ease-in' as requested
+        */
+        animation: 
+          slide-up-transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+          fade-in-ease-in 1.2s ease-in forwards;
+        will-change: transform, opacity;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "d3": "https://aistudiocdn.com/d3@^7.9.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
