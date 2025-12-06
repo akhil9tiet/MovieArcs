@@ -1,5 +1,7 @@
 {
   "name": "Animated D3 Line Chart",
   "description": "A pixel-perfect, high-performance animated line chart using D3.js and React, featuring smooth drawing animations, gradient fills, and responsive design.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "display-capture"
+  ]
 }

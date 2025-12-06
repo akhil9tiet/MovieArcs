@@ -10,6 +10,8 @@ interface LineChartProps {
   lineColor?: string;
   gradientStart?: string;
   gradientEnd?: string;
+  disableAnimation?: boolean;
+  theme?: 'dark' | 'light';
 }
 
 const emotionMap: Record<number, string> = {
@@ -41,7 +43,9 @@ const LineChart: React.FC<LineChartProps> = ({
   baselineData,
   lineColor = "#6366f1", // Indigo 500
   gradientStart = "rgba(99, 102, 241, 0.5)", 
-  gradientEnd = "rgba(99, 102, 241, 0)" 
+  gradientEnd = "rgba(99, 102, 241, 0)",
+  disableAnimation = false,
+  theme = 'dark'
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -50,9 +54,17 @@ const LineChart: React.FC<LineChartProps> = ({
   useEffect(() => {
     if (!dimensions || !data || data.length === 0 || !svgRef.current) return;
 
-    // --- Animation Constants (Moved to top to avoid ReferenceError) ---
-    const startDelay = 600; 
-    const duration = 2000;
+    // --- Theme Constants ---
+    const isLight = theme === 'light';
+    const axisTextColor = isLight ? "#475569" : "#94a3b8"; // Slate-600 vs Slate-400
+    const gridColor = isLight ? "#cbd5e1" : "#475569"; // Slate-300 vs Slate-600
+    const zeroLineColor = isLight ? "#94a3b8" : "#64748b"; // Slate-400 vs Slate-500
+    const pillTextColor = isLight ? "#334155" : "currentColor"; // Slate-700 vs Inherit
+    
+    // --- Animation Constants ---
+    // If disableAnimation is true, we set duration to 0 and startDelay to 0
+    const startDelay = disableAnimation ? 0 : 600; 
+    const duration = disableAnimation ? 0 : 2000;
     const ease = d3.easeCubicOut;
 
     // --- Setup ---
@@ -117,8 +129,8 @@ const LineChart: React.FC<LineChartProps> = ({
       .attr("x2", "100%")
       .attr("y2", "0%");
       
-    lineGradient.append("stop").attr("offset", "0%").attr("stop-color", "#a5b4fc"); // indigo-300
-    lineGradient.append("stop").attr("offset", "100%").attr("stop-color", "#6366f1"); // indigo-500
+    lineGradient.append("stop").attr("offset", "0%").attr("stop-color", isLight ? "#818cf8" : "#a5b4fc"); // Adjust for light mode
+    lineGradient.append("stop").attr("offset", "100%").attr("stop-color", lineColor); 
 
     // 3. Drop Shadow Filter (High quality)
     const filterId = "drop-shadow";
@@ -174,10 +186,10 @@ const LineChart: React.FC<LineChartProps> = ({
       .call(xAxisGrid);
     
     gridGroup.selectAll("line")
-      .attr("stroke", "#475569") // Slate-600 (Darker gray)
+      .attr("stroke", gridColor) 
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "4 4") // Dashed
-      .attr("opacity", 0);
+      .attr("opacity", disableAnimation ? 0.3 : 0); // Initial opacity
 
     gridGroup.select(".domain").remove();
 
@@ -192,22 +204,21 @@ const LineChart: React.FC<LineChartProps> = ({
       .call(yAxisGrid);
 
     yGridGroup.selectAll("line")
-      .attr("stroke", "#94a3b8") // Slate 400
-      .attr("stroke-width", 0.5) // Thin
-      .attr("opacity", 0);
+      .attr("stroke", isLight ? "#cbd5e1" : "#94a3b8") // Light mode uses lighter gray
+      .attr("stroke-width", 0.5) 
+      .attr("opacity", disableAnimation ? 0.4 : 0);
 
     yGridGroup.select(".domain").remove();
 
     // --- Neutral Axis Line (Zero Line) ---
-    // Drawn manually to sit at 0 instead of bottom
     const zeroLine = g.append("line")
       .attr("x1", 0)
       .attr("x2", innerWidth)
       .attr("y1", yScale(0))
       .attr("y2", yScale(0))
-      .attr("stroke", "#64748b") // slate-500
+      .attr("stroke", zeroLineColor) 
       .attr("stroke-width", 2)
-      .style("opacity", 0);
+      .style("opacity", disableAnimation ? 0.8 : 0);
 
     // --- Axes ---
     const xAxis = d3.axisBottom(xScale)
@@ -225,11 +236,11 @@ const LineChart: React.FC<LineChartProps> = ({
     xAxisGroup.select(".domain").remove();
 
     xAxisGroup.selectAll("text")
-      .attr("fill", "#94a3b8")
+      .attr("fill", axisTextColor)
       .attr("font-size", "12px")
       .attr("font-weight", 500)
-      .style("opacity", 0)
-      .attr("transform", "translate(0, 10)");
+      .style("opacity", disableAnimation ? 1 : 0)
+      .attr("transform", disableAnimation ? "translate(0,0)" : "translate(0, 10)");
 
     // --- Structure Labels (Act II / Act III) ---
     const structureLabelsData = [
@@ -239,7 +250,7 @@ const LineChart: React.FC<LineChartProps> = ({
 
     const structureLabels = g.append("g")
       .attr("class", "structure-labels")
-      .attr("transform", `translate(0, ${innerHeight + 50})`); // Position below numbers (moved down from 35 to 50)
+      .attr("transform", `translate(0, ${innerHeight + 50})`); // Position below numbers
 
     structureLabels.selectAll("text")
       .data(structureLabelsData)
@@ -248,11 +259,11 @@ const LineChart: React.FC<LineChartProps> = ({
       .attr("x", d => xScale(d.x))
       .attr("y", 0)
       .attr("text-anchor", "middle")
-      .attr("fill", "#64748b") // Slate 500
-      .attr("font-size", "10px") // Smaller than axis markings
+      .attr("fill", axisTextColor) 
+      .attr("font-size", "10px") 
       .attr("font-weight", "500")
       .text(d => d.label)
-      .style("opacity", 0)
+      .style("opacity", disableAnimation ? 1 : 0)
       .transition()
       .delay((d, i) => startDelay + 1000 + i * 100)
       .duration(1000)
@@ -271,12 +282,12 @@ const LineChart: React.FC<LineChartProps> = ({
       
       const group = yLabelsGroup.append("g")
         .attr("transform", `translate(-15, ${yPos})`)
-        .style("opacity", 0);
+        .style("opacity", disableAnimation ? 1 : 0);
       
       // Determine color
-      let pillColor = "#64748b"; // Slate-500 (Neutral)
-      if (val > 0) pillColor = "#10b981"; // Emerald-500 (Green)
-      if (val < 0) pillColor = "#f43f5e"; // Rose-500 (Red)
+      let pillColor = isLight ? "#64748b" : "#64748b"; // Neutral
+      if (val > 0) pillColor = "#10b981"; // Green
+      if (val < 0) pillColor = "#f43f5e"; // Red
 
       // Background Pill
       const pillWidth = 110;
@@ -289,7 +300,7 @@ const LineChart: React.FC<LineChartProps> = ({
         .attr("height", pillHeight)
         .attr("rx", pillHeight / 2) // Rounded full
         .attr("fill", pillColor)
-        .attr("fill-opacity", 0.2); // Semi-transparent background
+        .attr("fill-opacity", isLight ? 0.15 : 0.2); // Adjust opacity for light mode
       
       // Text
       group.append("text")
@@ -297,7 +308,7 @@ const LineChart: React.FC<LineChartProps> = ({
         .attr("y", 1) // Center vertically approx
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "middle")
-        .attr("fill", pillColor) // Text matches pill color
+        .attr("fill", isLight && val === 0 ? pillTextColor : pillColor) 
         .attr("font-size", "10px")
         .attr("font-weight", "600")
         .text(`${val > 0 ? '+' : ''}${val} ${label}`);
@@ -320,19 +331,21 @@ const LineChart: React.FC<LineChartProps> = ({
         const baselinePath = g.append("path")
             .datum(baselineData)
             .attr("fill", "none")
-            .attr("stroke", "#64748b") // slate-500
+            .attr("stroke", isLight ? "#94a3b8" : "#64748b") 
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "4, 6") // Dotted line
             .attr("stroke-linecap", "round")
             .attr("stroke-linejoin", "round")
             .attr("d", lineGenerator)
-            .style("opacity", 0);
+            .style("opacity", disableAnimation ? 0.5 : 0);
 
-        // Simple fade in for baseline
-        baselinePath.transition()
-            .delay(startDelay)
-            .duration(1500)
-            .style("opacity", 0.5); // Keep it subtle
+        if (!disableAnimation) {
+          // Simple fade in for baseline
+          baselinePath.transition()
+              .delay(startDelay)
+              .duration(1500)
+              .style("opacity", 0.5); 
+        }
     }
 
     // 1. Area Path (Clipped rect animation)
@@ -356,9 +369,11 @@ const LineChart: React.FC<LineChartProps> = ({
 
     const totalLength = linePath.node()?.getTotalLength() || 0;
 
-    linePath
-      .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
-      .attr("stroke-dashoffset", totalLength);
+    if (!disableAnimation) {
+      linePath
+        .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+        .attr("stroke-dashoffset", totalLength);
+    }
 
     // 3. Cursor Dot
     const cursorDot = g.append("circle")
@@ -370,70 +385,76 @@ const LineChart: React.FC<LineChartProps> = ({
 
     // --- Animation Sequence ---
     
-    // Animate Area Reveal
-    clipRect.transition()
-      .delay(startDelay)
-      .duration(duration)
-      .ease(ease)
-      .attr("width", innerWidth + margin.left);
+    if (!disableAnimation) {
+      // Animate Area Reveal
+      clipRect.transition()
+        .delay(startDelay)
+        .duration(duration)
+        .ease(ease)
+        .attr("width", innerWidth + margin.left);
 
-    // Animate Line Drawing
-    linePath.transition()
-      .delay(startDelay)
-      .duration(duration)
-      .ease(ease)
-      .attr("stroke-dashoffset", 0);
+      // Animate Line Drawing
+      linePath.transition()
+        .delay(startDelay)
+        .duration(duration)
+        .ease(ease)
+        .attr("stroke-dashoffset", 0);
 
-    // Animate Dot
-    cursorDot.transition()
-      .delay(startDelay)
-      .duration(duration)
-      .ease(ease)
-      .tween("pathTween", function() {
-        return function(t) {
-            const point = linePath.node()?.getPointAtLength(t * totalLength);
-            if (point) {
-                d3.select(this)
-                    .attr("cx", point.x)
-                    .attr("cy", point.y)
-                    .style("opacity", 1);
-            }
-        };
-      });
+      // Animate Dot
+      cursorDot.transition()
+        .delay(startDelay)
+        .duration(duration)
+        .ease(ease)
+        .tween("pathTween", function() {
+          return function(t) {
+              const point = linePath.node()?.getPointAtLength(t * totalLength);
+              if (point) {
+                  d3.select(this)
+                      .attr("cx", point.x)
+                      .attr("cy", point.y)
+                      .style("opacity", 1);
+              }
+          };
+        });
 
-    // Animate Grid (Vertical Act Breaks)
-    gridGroup.selectAll("line")
-      .transition()
-      .delay((d, i) => startDelay + i * 100)
-      .duration(1000)
-      .attr("opacity", 0.2); 
-
-    // Animate Reference Lines (-10, -5, 5, 10)
-    yGridGroup.selectAll("line")
+      // Animate Grid (Vertical Act Breaks)
+      gridGroup.selectAll("line")
         .transition()
         .delay((d, i) => startDelay + i * 100)
         .duration(1000)
-        .attr("opacity", 0.3);
-    
-    // Animate Zero Line
-    zeroLine.transition()
-        .delay(startDelay)
-        .duration(1000)
-        .style("opacity", 0.8);
+        .attr("opacity", 0.3); // Increased opacity slightly for visibility
 
-    xAxisGroup.selectAll("text")
-      .transition()
-      .delay((d, i) => startDelay + 800 + i * 50)
-      .duration(800)
-      .style("opacity", 1)
-      .attr("transform", "translate(0, 0)");
+      // Animate Reference Lines (-10, -5, 5, 10)
+      yGridGroup.selectAll("line")
+          .transition()
+          .delay((d, i) => startDelay + i * 100)
+          .duration(1000)
+          .attr("opacity", 0.4);
+      
+      // Animate Zero Line
+      zeroLine.transition()
+          .delay(startDelay)
+          .duration(1000)
+          .style("opacity", 0.8);
 
-    // Animate Y Labels (Staggered)
-    yLabelsGroup.selectAll("g")
-      .transition()
-      .delay((d, i) => startDelay + 500 + i * 30) // Stagger effect
-      .duration(600)
-      .style("opacity", 1);
+      xAxisGroup.selectAll("text")
+        .transition()
+        .delay((d, i) => startDelay + 800 + i * 50)
+        .duration(800)
+        .style("opacity", 1)
+        .attr("transform", "translate(0, 0)");
+
+      // Animate Y Labels (Staggered)
+      yLabelsGroup.selectAll("g")
+        .transition()
+        .delay((d, i) => startDelay + 500 + i * 30) // Stagger effect
+        .duration(600)
+        .style("opacity", 1);
+    } else {
+        // Immediate State if animations disabled
+        clipRect.attr("width", innerWidth + margin.left);
+        // cursorDot not shown initially or placed at end
+    }
 
     // --- Interaction ---
     const overlay = g.append("rect")
@@ -444,36 +465,44 @@ const LineChart: React.FC<LineChartProps> = ({
 
     // Tooltip elements
     const tooltipLine = g.append("line")
-        .attr("stroke", "#94a3b8")
+        .attr("stroke", axisTextColor)
         .attr("stroke-dasharray", "4,4")
         .attr("y1", 0)
         .attr("y2", innerHeight)
         .attr("opacity", 0);
     
     const tooltipBox = g.append("g").attr("opacity", 0);
-    const tooltipRect = tooltipBox.append("rect")
-        .attr("width", 80)
-        .attr("height", 55)
-        .attr("fill", "#1e293b")
-        .attr("stroke", "#475569")
-        .attr("rx", 8)
-        .attr("ry", 8)
-        .style("filter", "drop-shadow(0 4px 6px rgba(0,0,0,0.3))");
     
-    const tooltipTextX = tooltipBox.append("text")
-        .attr("x", 40)
+    // Tooltip background rect, width updated dynamically
+    const tooltipRect = tooltipBox.append("rect")
+        .attr("width", 150) // Initial width
+        .attr("height", 60) // Adjusted height for 2 lines
+        .attr("fill", isLight ? "rgba(255, 255, 255, 0.95)" : "#1e293b")
+        .attr("stroke", isLight ? "#e2e8f0" : "#475569")
+        .attr("rx", 6)
+        .attr("ry", 6)
+        .style("filter", "drop-shadow(0 4px 6px rgba(0,0,0,0.15))");
+    
+    // Story Label (Top Line)
+    const tooltipStoryLabel = tooltipBox.append("text")
+        .attr("x", 12)
         .attr("y", 22)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
-        .attr("fill", "#94a3b8");
-
-    const tooltipTextValue = tooltipBox.append("text")
-        .attr("x", 40)
-        .attr("y", 42)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
+        .attr("text-anchor", "start")
+        .attr("font-size", "10px")
         .attr("font-weight", "bold")
-        .attr("fill", "#fff");
+        .attr("fill", isLight ? "#64748b" : "#94a3b8") 
+        .style("text-transform", "uppercase")
+        .text("");
+
+    // Movie Label (Bottom Line)
+    const tooltipMovieLabel = tooltipBox.append("text")
+        .attr("x", 12)
+        .attr("y", 42)
+        .attr("text-anchor", "start")
+        .attr("font-size", "12px")
+        .attr("font-weight", "500")
+        .attr("fill", isLight ? "#1e293b" : "#f1f5f9")
+        .text("");
 
     // Bisector for 'x' property (number)
     const bisect = d3.bisector<DataPoint, number>(d => d.x).left;
@@ -498,6 +527,9 @@ const LineChart: React.FC<LineChartProps> = ({
         const x = xScale(d.x);
         const y = yScale(d.value);
 
+        // Find baseline point
+        const b = baselineData ? baselineData.find(p => p.x === d.x) : null;
+
         cursorDot
             .interrupt()
             .style("opacity", 1)
@@ -509,19 +541,36 @@ const LineChart: React.FC<LineChartProps> = ({
             .attr("x2", x)
             .attr("opacity", 1);
 
-        let boxX = x - 40; // Center 80px wide box
-        let boxY = y - 80;
+        // --- Content Update ---
+        const storyText = b?.label || "Unknown Stage";
+        const movieText = d.label || "";
+
+        tooltipStoryLabel.text(storyText);
+        tooltipMovieLabel.text(movieText);
+
+        // Dynamic Width Calculation based on text length
+        const w1 = tooltipStoryLabel.node()?.getComputedTextLength() || 0;
+        const w2 = tooltipMovieLabel.node()?.getComputedTextLength() || 0;
+        const maxTextWidth = Math.max(w1, w2);
+        const boxWidth = maxTextWidth + 24; // 12px padding on each side
+
+        tooltipRect.attr("width", boxWidth);
+
+        // --- Position Update ---
+        // Center tooltip box horizontally over point, but constrained by container width
+        let boxX = x - boxWidth / 2;
+        let boxY = y - 75; // Position well above the cursor
         
+        // Bounds checking
         if (boxX < 0) boxX = 0;
-        if (boxX + 80 > innerWidth) boxX = innerWidth - 80;
+        if (boxX + boxWidth > innerWidth) boxX = innerWidth - boxWidth;
+        
+        // If box goes off top, flip below
         if (boxY < 0) boxY = y + 20;
 
         tooltipBox
             .attr("transform", `translate(${boxX}, ${boxY})`)
             .attr("opacity", 1);
-        
-        tooltipTextX.text(`Point: ${d.x}`);
-        tooltipTextValue.text(`${d.value.toFixed(1)}`);
     });
 
     overlay.on("mouseleave", () => {
@@ -535,7 +584,7 @@ const LineChart: React.FC<LineChartProps> = ({
             .attr("cy", yScale(lastPoint.value));
     });
 
-  }, [data, baselineData, dimensions, lineColor, gradientStart, gradientEnd]);
+  }, [data, baselineData, dimensions, lineColor, gradientStart, gradientEnd, disableAnimation, theme]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative">

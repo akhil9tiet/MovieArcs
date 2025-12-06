@@ -1,101 +1,45 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import LineChart from './components/LineChart';
-import { DataPoint } from './types';
-
-// Baseline Story Arc Data
-const storyArcRaw = [
-  { point: 1,  label: "Opening image",          value: 1 },
-  { point: 2,  label: "Setup",                   value: 2 },
-  { point: 3,  label: "Theme stated",            value: 1 },
-  { point: 4,  label: "Inciting incident",       value: -3 },
-  { point: 5,  label: "Debate",                  value: -5 },
-  { point: 6,  label: "Break into Act II",       value: 0 },
-  { point: 7,  label: "B story",                 value: 2 },
-  { point: 8,  label: "Fun and games begins",    value: -2 },
-  { point: 9,  label: "Rising complications",    value: -4 },
-  { point: 10, label: "Mid-crisis setup",        value: -6 },
-  { point: 11, label: "Hope spot",               value: -3 },
-  { point: 12, label: "Midpoint (reversal)",     value: 0 },
-  { point: 13, label: "Escalation",              value: 1 },
-  { point: 14, label: "Tension mounts",          value: -1 },
-  { point: 15, label: "Bad guys close in",       value: -3 },
-  { point: 16, label: "All is lost",             value: -8 },
-  { point: 17, label: "Dark night of the soul",  value: -6 },
-  { point: 18, label: "Break into Act III",      value: -2 },
-  { point: 19, label: "Final approach",          value: 3 },
-  { point: 20, label: "Climax",                  value: 6 },
-  { point: 21, label: "Payoff",                  value: 8 },
-  { point: 22, label: "Falling action",          value: 6 },
-  { point: 23, label: "Denouement",              value: 4 },
-  { point: 24, label: "Final image",             value: 7 }
-];
-
-// Convert to DataPoint format for chart
-const storyArcData: DataPoint[] = storyArcRaw.map(item => ({
-  x: item.point,
-  value: item.value,
-  label: item.label
-}));
-
-// Extended Interface for Table Data
-interface DetailedDataPoint extends DataPoint {
-  emotion: string;
-}
-
-// Interstellar Movie Arc Data with Emotion Labels
-const interstellarMovieData: DetailedDataPoint[] = [
-  { x: 1, value: -4, label: "Opening on Earth, dust storms, failing crops", emotion: "Frustration" },
-  { x: 2, value: -2, label: "Cooper with family, school conflict", emotion: "Unease" },
-  { x: 3, value: 2, label: "Discovering NASA’s secret base", emotion: "Hope" },
-  { x: 4, value: -7, label: "Decision to leave family behind", emotion: "Anxiety" },
-  { x: 5, value: 5, label: "Launch into space", emotion: "Joy" },
-  { x: 6, value: 3, label: "Arrival at Saturn wormhole", emotion: "Confidence" },
-  { x: 7, value: -6, label: "First planet (Miller’s water world), disaster", emotion: "Sadness" },
-  { x: 8, value: -8, label: "Doyle’s death, time dilation shock", emotion: "Betrayal" },
-  { x: 9, value: -9, label: "Return to Endurance, decades lost", emotion: "Devastation" },
-  { x: 10, value: -7, label: "Watching Murph’s angry video messages", emotion: "Anxiety" },
-  { x: 11, value: 1, label: "Journey to Mann’s planet", emotion: "Relief" },
-  { x: 12, value: -8, label: "Mann’s betrayal", emotion: "Deep sadness" },
-  { x: 13, value: -5, label: "Mann’s sabotage, Endurance damaged", emotion: "Tension" },
-  { x: 14, value: 6, label: "Docking sequence (Cooper saves Endurance)", emotion: "Achievement" },
-  { x: 15, value: -3, label: "Cooper decides to sacrifice himself", emotion: "Conflict" },
-  { x: 16, value: -10, label: "Entering the black hole", emotion: "Despair" },
-  { x: 17, value: 4, label: "Tesseract reveal, communication with Murph", emotion: "Satisfaction" },
-  { x: 18, value: 8, label: "Cooper realizes love bridges dimensions", emotion: "Triumph" },
-  { x: 19, value: 9, label: "Murph solves equation on Earth", emotion: "Celebration" },
-  { x: 20, value: 6, label: "Cooper rescued near Saturn", emotion: "Relief" },
-  { x: 21, value: 7, label: "Reunion with elderly Murph", emotion: "Happiness" },
-  { x: 22, value: 2, label: "Murph urges Cooper to find Brand", emotion: "Hope" },
-  { x: 23, value: 5, label: "Brand on Edmunds’ planet, new beginning", emotion: "Joy" },
-  { x: 24, value: 10, label: "Closing image: humanity’s survival assured", emotion: "Elation" },
-];
+import AllAlignedView from './components/AllAlignedView';
+import { 
+    movies, 
+    getMovieData, 
+    getMovieYear, 
+    storyArcData, 
+    storyArcRaw 
+} from './data';
+import { MovieKey } from './types';
 
 const App: React.FC = () => {
-  const [data, setData] = useState<DetailedDataPoint[]>(interstellarMovieData);
+  const [activeMovie, setActiveMovie] = useState<MovieKey>('Interstellar');
   const [key, setKey] = useState(0); // Used to force re-render/re-animate
   const [isRecording, setIsRecording] = useState(false);
+  const [viewMode, setViewMode] = useState<'single' | 'all-aligned'>('single');
+
+  // Derived state
+  const currentData = getMovieData(activeMovie);
+  const movieYear = getMovieYear(activeMovie);
+  const director = 'Christopher Nolan'; 
+
+  const handleMovieChange = (movie: MovieKey) => {
+    setActiveMovie(movie);
+    setKey(prev => prev + 1); // Trigger re-animation
+  };
 
   const handleRefresh = () => {
-    // Reset data (though it's static now) and trigger re-render
-    setData(interstellarMovieData);
     setKey(prev => prev + 1);
   };
 
   const handleDownloadVideo = async () => {
     try {
-      // 1. Ask user to select screen/tab to record
-      // We recommend they select "This Tab" for best results
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          displaySurface: "browser", // Hint to browser to prefer tab sharing
-        },
+        video: { displaySurface: "browser" },
         audio: false
       });
 
       setIsRecording(true);
 
-      // 2. Check supported mime types
       const mimeType = MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "video/webm";
       const mediaRecorder = new MediaRecorder(stream, { mimeType });
       const chunks: BlobPart[] = [];
@@ -109,35 +53,30 @@ const App: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        // Use mp4 extension if supported, else webm
-        a.download = `story-arc-animation.${mimeType === "video/mp4" ? "mp4" : "webm"}`;
+        a.download = `${activeMovie.toLowerCase().replace(/ /g, '-')}-arc-animation.${mimeType === "video/mp4" ? "mp4" : "webm"}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        // Stop all tracks to clear the recording icon in browser
         stream.getTracks().forEach(track => track.stop());
         setIsRecording(false);
       };
 
-      // 3. Start recording
       mediaRecorder.start();
-
-      // 4. Trigger the animation replay immediately
       handleRefresh();
 
-      // 5. Stop recording after adequate time (4.5s covers the animation + buffer)
       setTimeout(() => {
         if (mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
         }
       }, 4500);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error recording:", err);
       setIsRecording(false);
-      alert("Could not start recording. Please ensure you grant screen recording permissions.");
+      if (err.name === 'NotAllowedError') return;
+      alert(`Could not start recording. Error: ${err.message || 'Unknown error'}`);
     }
   };
 
@@ -153,35 +92,74 @@ const App: React.FC = () => {
     return "bg-slate-500/10 border-slate-500/20";
   };
 
+  // Render "All Aligned" Comparison View
+  if (viewMode === 'all-aligned') {
+      return <AllAlignedView onBack={() => setViewMode('single')} />;
+  }
+
+  // Render Default "Single" View
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-x-hidden gap-8">
       
+      {/* Header Controls: Movie Tabs & View Toggle */}
+      <div className="w-full max-w-4xl flex flex-col gap-4 items-center">
+          <div className="flex gap-2">
+            <button 
+                onClick={() => setViewMode('single')}
+                className="px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-600 text-white shadow-lg"
+            >
+                Single View
+            </button>
+            <button 
+                onClick={() => setViewMode('all-aligned')}
+                className="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-700 text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
+            >
+                Compare All
+            </button>
+          </div>
+
+          <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-1.5 flex flex-wrap justify-center gap-1 shadow-lg">
+            {movies.map(movie => (
+                <button
+                key={movie}
+                onClick={() => handleMovieChange(movie)}
+                className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 ${
+                    activeMovie === movie 
+                    ? 'bg-indigo-600 text-white shadow-lg scale-105' 
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                }`}
+                >
+                {movie}
+                </button>
+            ))}
+          </div>
+      </div>
+
       <div key={key} className="w-full max-w-4xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl overflow-hidden p-6 md:p-8 flex flex-col gap-6 animate-card-entry">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div className="animate-title-slide">
             <h2 className="text-slate-400 text-sm font-medium tracking-wider uppercase mb-1">STORY ARC</h2>
-            <div className="flex items-baseline gap-4">
-              <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                Interstellar
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
+                {activeMovie}
               </h1>
               <div className="flex items-center gap-1 text-sm font-semibold px-2 py-1 rounded-full bg-indigo-500/10 text-indigo-400">
-                <span>2014</span>
+                <span>{movieYear}</span>
               </div>
             </div>
             {/* Director Pill */}
             <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-slate-700/50 border border-slate-600/50">
-              <span className="text-emerald-400 text-sm font-medium">Christopher Nolan</span>
+              <span className="text-emerald-400 text-sm font-medium">{director}</span>
             </div>
           </div>
         </div>
 
         {/* Chart Container */}
         <div className="w-full h-[400px] md:h-[500px] relative rounded-xl bg-slate-900/30 border border-slate-700/30 shadow-inner">
-           {/* Passing key forces React to unmount and remount the chart, triggering animations again */}
            <LineChart 
-              data={data} 
+              data={currentData} 
               baselineData={storyArcData}
               lineColor="#818cf8" 
               gradientStart="rgba(129, 140, 248, 0.4)" 
@@ -193,12 +171,10 @@ const App: React.FC = () => {
         <div className="flex flex-col gap-2 pt-2 animate-legend-entry">
           <div className="flex gap-6 justify-center md:justify-start">
               <div className="flex items-center gap-2">
-                  {/* Halo effect: Stronger shadow + ring */}
                   <div className="w-3 h-3 rounded-full bg-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.7)] ring-4 ring-indigo-500/20"></div>
                   <span className="text-slate-400 text-sm">movie arc</span>
               </div>
               <div className="flex items-center gap-2">
-                  {/* Visual representation of dotted gray line for legend */}
                   <div className="flex items-center justify-center w-6 h-3">
                      <div className="w-full border-b-2 border-slate-500 border-dotted"></div>
                   </div>
@@ -215,7 +191,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Data Table */}
-      <div className="w-full max-w-4xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl overflow-hidden animate-card-entry" style={{animationDelay: '0.2s'}}>
+      <div key={`${key}-table`} className="w-full max-w-4xl bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl overflow-hidden animate-card-entry" style={{animationDelay: '0.2s'}}>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
@@ -225,23 +201,20 @@ const App: React.FC = () => {
                   Story Arc (Baseline)
                 </th>
                 <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  Movie Arc (Interstellar)
+                  Movie Arc ({activeMovie})
                 </th>
                 <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider w-32">Emotion</th>
                 <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider w-24 text-center">Value</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/30">
-              {interstellarMovieData.map((moviePoint, index) => {
+              {currentData.map((moviePoint, index) => {
                 const storyPoint = storyArcRaw[index];
                 return (
                   <tr key={moviePoint.x} className="hover:bg-slate-700/20 transition-colors">
-                    {/* Point */}
                     <td className="p-3 text-sm text-slate-500 text-center font-mono">
                       {moviePoint.x}
                     </td>
-
-                    {/* Baseline */}
                     <td className="p-3 border-r border-slate-700/30">
                       <div className="flex justify-between items-center gap-2">
                         <span className="text-sm text-slate-400 font-medium">{storyPoint.label}</span>
@@ -250,20 +223,14 @@ const App: React.FC = () => {
                         </span>
                       </div>
                     </td>
-
-                    {/* Movie Arc Scene */}
                     <td className="p-3">
                       <span className="text-sm text-slate-200">{moviePoint.label}</span>
                     </td>
-
-                    {/* Emotion Label */}
                     <td className="p-3">
                       <span className={`text-xs font-medium px-2 py-1 rounded-full ${getBgClass(moviePoint.value)} ${getColorClass(moviePoint.value)}`}>
                         {moviePoint.emotion}
                       </span>
                     </td>
-
-                    {/* Value */}
                     <td className="p-3 text-center">
                       <span className={`text-sm font-bold font-mono ${getColorClass(moviePoint.value)}`}>
                         {moviePoint.value > 0 ? '+' : ''}{moviePoint.value}
@@ -278,7 +245,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Bottom Controls */}
-      <div className="flex flex-col sm:flex-row items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 pb-12">
           <button 
             onClick={handleRefresh}
             disabled={isRecording}
