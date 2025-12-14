@@ -10,6 +10,9 @@ export interface DetailedDataPoint extends DataPoint {
 }
 
 export type MovieKey = 
+  | 'Following'
+  | 'Memento'
+  | 'Insomnia'
   | 'Batman Begins' 
   | 'The Prestige' 
   | 'The Dark Knight' 

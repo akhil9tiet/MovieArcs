@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,9 +18,7 @@
       @keyframes wipe-in-right-scale {
         0% {
           opacity: 0;
-          transform: scale(1.5);
-          /* Inset from left: 100% means hidden (clipped fully from left edge). 
-             Reveals as left inset decreases to 0. */
+          transform: scale(1.1);
           clip-path: inset(0 0 0 100%); 
         }
         100% {
@@ -29,23 +28,39 @@
         }
       }
 
-      /* Title Transform: Starts from center (translated right/down) and moves to top-left */
+      /* Strobe Lighting Animation for 3D Cards */
+      @keyframes strobe-flash {
+        0% {
+          box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+          border-color: rgba(255, 255, 255, 0.4);
+        }
+        20% {
+          box-shadow: 0 0 50px 10px rgba(129, 140, 248, 0.6); /* Brighter, wider glow */
+          border-color: rgba(165, 180, 252, 1);
+        }
+        100% {
+          box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.3);
+          border-color: rgba(255, 255, 255, 0.6);
+        }
+      }
+
+      /* Title Transform */
       @keyframes title-slide-transform {
         0% {
-          transform: translate(180px, 100px) scale(1.5); 
+          transform: translate(40px, 20px) scale(1.1);
         }
         100% {
           transform: translate(0, 0) scale(1);
         }
       }
 
-      /* Title Opacity: Fades in quickly (0.6s) */
+      /* Title Opacity */
       @keyframes title-fade {
         0% { opacity: 0; }
         100% { opacity: 1; }
       }
 
-      /* Legend Animations: Split for precise control */
+      /* Legend Animations */
       @keyframes slide-up-transform {
         0% { transform: translateY(40px); }
         100% { transform: translateY(0); }
@@ -56,19 +71,36 @@
         100% { opacity: 1; }
       }
 
+      /* Border Shine Animation - Simulating a trace */
+      @keyframes border-flow {
+        0% {
+          background-position: 200% 0; /* Start completely off right */
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          background-position: -200% 0; /* End completely off left */
+          opacity: 0;
+        }
+      }
+
       .animate-card-entry {
-        /* cubic-bezier(0.16, 1, 0.3, 1) is a common "Ease Out Expo" / "Jitter" feel */
         animation: wipe-in-right-scale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         transform-origin: center center;
         will-change: transform, clip-path, opacity;
       }
 
+      .animate-strobe {
+        animation: strobe-flash 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        will-change: box-shadow, border-color;
+      }
+
       .animate-title-slide {
-        /* 
-           Split animations:
-           1. Transform: 1.4s with exp easing (movement)
-           2. Opacity: 0.6s with ease-out (visibility) - finishes in half the time of card animation (1.2s)
-        */
         animation: 
             title-slide-transform 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
             title-fade 0.6s ease-out forwards;
@@ -77,15 +109,51 @@
       }
 
       .animate-legend-entry {
-        /* 
-           Combined animation:
-           - Slide up matches the smooth bezier of the card
-           - Opacity uses 'ease-in' as requested
-        */
         animation: 
           slide-up-transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards,
           fade-in-ease-in 1.2s ease-in forwards;
         will-change: transform, opacity;
+      }
+
+      .card-border-shine {
+        position: absolute;
+        inset: 0;
+        border-radius: 1.5rem;
+        padding: 2px; /* Thicker trace */
+        background: linear-gradient(
+          90deg, 
+          transparent 0%, 
+          transparent 40%, 
+          rgba(165, 180, 252, 1) 50%, /* Sharp bright center */
+          transparent 60%, 
+          transparent 100%
+        );
+        background-size: 200% 100%;
+        
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        
+        pointer-events: none;
+        animation: border-flow 1.5s ease-in-out forwards;
+        z-index: 50;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.5);
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(71, 85, 105, 0.5);
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.5);
       }
     </style>
   <script type="importmap">
@@ -94,7 +162,8 @@
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "d3": "https://aistudiocdn.com/d3@^7.9.0"
+    "d3": "https://aistudiocdn.com/d3@^7.9.0",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.0.0"
   }
 }
 </script>
@@ -103,3 +172,4 @@
     <div id="root"></div>
   </body>
 </html>
+    

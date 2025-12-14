@@ -112,34 +112,46 @@ const IsometricStackView: React.FC = () => {
                         <div 
                             key={movie}
                             style={cardStyle}
-                            className={`rounded-3xl border border-white/40 shadow-[20px_20px_60px_rgba(0,0,0,0.1)] flex flex-col gap-4 p-8 transition-all duration-500
-                                ${isActive ? 'bg-white/90 backdrop-blur-2xl border-white/80 shadow-[0_30px_80px_rgba(0,0,0,0.2)]' : 'bg-white/70 backdrop-blur-md grayscale-[0.2]'}
-                            `}
+                            className="transition-all duration-500"
                             onClick={() => setActiveIndex(index)}
                         >
-                            {/* Card Header */}
-                            <div className="flex justify-between items-end border-b border-slate-300/30 pb-4 select-none">
-                                <div>
-                                    <div className="text-xs font-bold text-slate-500 tracking-widest uppercase mb-1">Movie Arc</div>
-                                    <h2 className={`text-4xl font-bold ${isActive ? 'text-slate-900' : 'text-slate-700'}`}>{movie}</h2>
+                            {/* Inner wrapper handles visual style and entrance animation to avoid 3D transform conflict */}
+                            <div className={`
+                                w-full h-full flex flex-col gap-4 p-8 
+                                rounded-3xl border 
+                                transition-all duration-500 animate-card-entry relative
+                                ${isActive 
+                                    ? 'bg-white border-white/60 shadow-2xl animate-strobe' 
+                                    : 'bg-slate-50 border-slate-200/50 shadow-xl grayscale-[0.2]'
+                                }
+                            `}>
+                                {/* Border Shine - Only render when active to replay animation */}
+                                {isActive && <div className="card-border-shine"></div>}
+
+                                {/* Card Header */}
+                                <div className="flex justify-between items-end border-b border-slate-200 pb-4 select-none relative z-10">
+                                    <div>
+                                        <div className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-1">Movie Arc</div>
+                                        <h2 className={`text-4xl font-bold ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>{movie}</h2>
+                                    </div>
+                                    <div className="text-2xl font-bold text-slate-300">{getMovieYear(movie)}</div>
                                 </div>
-                                <div className="text-2xl font-bold text-slate-400">{getMovieYear(movie)}</div>
-                            </div>
-                            
-                            {/* Chart Area */}
-                            <div className="flex-1 relative bg-white/40 rounded-xl border border-white/50 shadow-inner overflow-hidden">
-                                {/* Only render chart if visible/close to conserve resources */}
-                                {(offset >= 0 && offset <= 2) && (
-                                    <LineChart 
-                                        data={data} 
-                                        baselineData={storyArcData}
-                                        lineColor={color}
-                                        gradientStart={`${color}66`} 
-                                        gradientEnd={`${color}00`}
-                                        disableAnimation={true}
-                                        theme="light" 
-                                    />
-                                )}
+                                
+                                {/* Chart Area */}
+                                <div className="flex-1 relative bg-slate-50/50 rounded-xl border border-slate-100 shadow-inner overflow-hidden z-10">
+                                    {/* Only render chart if visible/close to conserve resources */}
+                                    {(offset >= 0 && offset <= 2) && (
+                                        <LineChart 
+                                            data={data} 
+                                            baselineData={storyArcData}
+                                            lineColor={color}
+                                            gradientStart={`${color}66`} 
+                                            gradientEnd={`${color}00`}
+                                            disableAnimation={true}
+                                            theme="light" 
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );

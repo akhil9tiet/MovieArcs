@@ -34,6 +34,87 @@ export const storyArcData: DataPoint[] = storyArcRaw.map(item => ({
   label: item.label
 }));
 
+export const followingData: DetailedDataPoint[] = [
+  { x: 1, value: 0, label: "Bill shadowing strangers", emotion: "Curiosity" },
+  { x: 2, value: 1, label: "Setting the rules of following", emotion: "Control" },
+  { x: 3, value: -1, label: "Everyone has a box (Theme)", emotion: "Obsession" },
+  { x: 4, value: -3, label: "Caught by Cobb in the diner", emotion: "Embarrassment" },
+  { x: 5, value: 2, label: "Cobb invites Bill to burgle", emotion: "Intrigue" },
+  { x: 6, value: 4, label: "First break-in together", emotion: "Thrill" },
+  { x: 7, value: 3, label: "Obsessing over the Blonde", emotion: "Infatuation" },
+  { x: 8, value: 5, label: "Adopting Cobb's lifestyle", emotion: "Transformation" },
+  { x: 9, value: 2, label: "Dating the Blonde", emotion: "Connection" },
+  { x: 10, value: -4, label: "Blonde reveals blackmail plot", emotion: "Concern" },
+  { x: 11, value: -2, label: "Planning to rob the safe", emotion: "Determination" },
+  { x: 12, value: -6, label: "The robbery / Photos found", emotion: "Shock" },
+  { x: 13, value: -5, label: "Realizing the danger", emotion: "Fear" },
+  { x: 14, value: -8, label: "The hammer murder scene", emotion: "Horror" },
+  { x: 15, value: -6, label: "Police suspicion grows", emotion: "Paranoia" },
+  { x: 16, value: -9, label: "Framed for the murder", emotion: "Trapped" },
+  { x: 17, value: -10, label: "Cobb disappears completely", emotion: "Abandonment" },
+  { x: 18, value: -7, label: "Confessing to police", emotion: "Desperation" },
+  { x: 19, value: -5, label: "Story doesn't add up", emotion: "Confusion" },
+  { x: 20, value: -8, label: "Police search Bill's apartment", emotion: "Doom" },
+  { x: 21, value: -9, label: "Evidence found planted", emotion: "Betrayal" },
+  { x: 22, value: -10, label: "Bill realizes he is the mark", emotion: "Defeat" },
+  { x: 23, value: -4, label: "Cobb watching in the crowd", emotion: "Coldness" },
+  { x: 24, value: -8, label: "Alone in prison", emotion: "Isolation" },
+];
+
+export const mementoData: DetailedDataPoint[] = [
+  { x: 1, value: 4, label: "Killing Teddy (The end is the beginning)", emotion: "Vengeance" },
+  { x: 2, value: -2, label: "Waking up in the motel room", emotion: "Confusion" },
+  { x: 3, value: -3, label: "Talking to 'Sammy' on the phone", emotion: "Loneliness" },
+  { x: 4, value: 2, label: "Tattooing 'Fact 5'", emotion: "Purpose" },
+  { x: 5, value: -4, label: "Meeting Natalie at the bar", emotion: "Suspicion" },
+  { x: 6, value: -1, label: "Natalie tests Leonard (Spit drink)", emotion: "Disgust" },
+  { x: 7, value: -5, label: "Remembering his wife's death", emotion: "Trauma" },
+  { x: 8, value: 3, label: "Finding the Jaguar and suit", emotion: "Transformation" },
+  { x: 9, value: 1, label: "Chasing Dodd (or being chased?)", emotion: "Adrenaline" },
+  { x: 10, value: -6, label: "Discovering he attacked Dodd", emotion: "Guilt" },
+  { x: 11, value: 2, label: "Sleeping with Natalie (False comfort)", emotion: "Intimacy" },
+  { x: 12, value: -8, label: "Burning his wife's possessions", emotion: "Grief" },
+  { x: 13, value: -7, label: "Hiring the escort to reenact the night", emotion: "Despair" },
+  { x: 14, value: -4, label: "Meeting Teddy at the warehouse", emotion: "Distrust" },
+  { x: 15, value: -2, label: "Arriving at the abandoned building", emotion: "Tension" },
+  { x: 16, value: -9, label: "Killing Jimmy Grantz", emotion: "Horror" },
+  { x: 17, value: -10, label: "Jimmy whispers 'Sammy'", emotion: "Shock" },
+  { x: 18, value: -8, label: "Teddy reveals the truth (You're Sammy)", emotion: "Betrayal" },
+  { x: 19, value: -5, label: "Leonard rejects the truth", emotion: "Denial" },
+  { x: 20, value: -3, label: "Deciding to set up Teddy", emotion: "Calculation" },
+  { x: 21, value: 0, label: "Writing 'Don't believe his lies'", emotion: "Determination" },
+  { x: 22, value: 3, label: "Driving away, closing his eyes", emotion: "Relief" },
+  { x: 23, value: 5, label: "The tattoo shop: 'I have to believe...'", emotion: "Hope" },
+  { x: 24, value: 2, label: "Now... where was I?", emotion: "Identity" },
+];
+
+export const insomniaData: DetailedDataPoint[] = [
+  { x: 1, value: 0, label: "Flying over glaciers", emotion: "Awe" },
+  { x: 2, value: -1, label: "Arrival in Nightmute", emotion: "Discomfort" },
+  { x: 3, value: -2, label: "Good cop can't sleep (Theme)", emotion: "Unease" },
+  { x: 4, value: 1, label: "Setting the trap for the killer", emotion: "Focus" },
+  { x: 5, value: -3, label: "Chasing into the fog", emotion: "Disorientation" },
+  { x: 6, value: -9, label: "Dormer shoots Hap by mistake", emotion: "Horror" },
+  { x: 7, value: -5, label: "Ellie investigates the scene", emotion: "Anxiety" },
+  { x: 8, value: -4, label: "Hiding the shell casing", emotion: "Guilt" },
+  { x: 9, value: -6, label: "Killer calls: 'I saw you'", emotion: "Paranoia" },
+  { x: 10, value: -8, label: "Insomnia hallucination begins", emotion: "Exhaustion" },
+  { x: 11, value: -2, label: "Meeting Finch on the ferry", emotion: "Suspicion" },
+  { x: 12, value: -7, label: "Finch admits it / Blackmails Dormer", emotion: "Trapped" },
+  { x: 13, value: -6, label: "Helping frame the boyfriend", emotion: "Corruption" },
+  { x: 14, value: -5, label: "Ellie finds the 9mm casing", emotion: "Tension" },
+  { x: 15, value: -8, label: "Finch's manipulation tightens", emotion: "Suffocation" },
+  { x: 16, value: -9, label: "Dormer's guilt consumes him", emotion: "Despair" },
+  { x: 17, value: -4, label: "Confessing to the hotel owner", emotion: "Unburdening" },
+  { x: 18, value: -2, label: "Ellie goes to the lake house", emotion: "Danger" },
+  { x: 19, value: 2, label: "Rushing to save Ellie", emotion: "Adrenaline" },
+  { x: 20, value: 4, label: "Shootout at the lake house", emotion: "Climax" },
+  { x: 21, value: 1, label: "Finch dead, Dormer shot", emotion: "Resolution" },
+  { x: 22, value: 3, label: "'Let me sleep'", emotion: "Peace" },
+  { x: 23, value: 5, label: "Stopping Ellie from hiding evidence", emotion: "Redemption" },
+  { x: 24, value: 6, label: "The Midnight Sun fades (metaphorically)", emotion: "Rest" },
+];
+
 export const batmanBeginsData: DetailedDataPoint[] = [
   { x: 1, value: -5, label: "Young Bruce falls into the well", emotion: "Fear" },
   { x: 2, value: -9, label: "Parents murdered in the alley", emotion: "Trauma" },
@@ -278,6 +359,9 @@ export const oppenheimerData: DetailedDataPoint[] = [
 ];
 
 export const movies: MovieKey[] = [
+    'Following',
+    'Memento',
+    'Insomnia',
     'Batman Begins', 
     'The Prestige', 
     'The Dark Knight', 
@@ -290,6 +374,9 @@ export const movies: MovieKey[] = [
 ];
 
 export const movieColors: Record<MovieKey, string> = {
+  'Following': '#f1f5f9', // Slate 100 (B&W feel)
+  'Memento': '#34d399', // Emerald 400
+  'Insomnia': '#7dd3fc', // Sky 300 (Ice Blue)
   'Batman Begins': '#94a3b8', // Slate
   'The Prestige': '#14b8a6', // Teal
   'The Dark Knight': '#3b82f6', // Blue
@@ -303,6 +390,9 @@ export const movieColors: Record<MovieKey, string> = {
 
 export const getMovieData = (key: MovieKey): DetailedDataPoint[] => {
     switch (key) {
+        case 'Following': return followingData;
+        case 'Memento': return mementoData;
+        case 'Insomnia': return insomniaData;
         case 'Batman Begins': return batmanBeginsData;
         case 'The Prestige': return prestigeData;
         case 'The Dark Knight': return darkKnightData;
@@ -318,6 +408,9 @@ export const getMovieData = (key: MovieKey): DetailedDataPoint[] => {
 
 export const getMovieYear = (key: MovieKey): string => {
     switch (key) {
+        case 'Following': return '1998';
+        case 'Memento': return '2000';
+        case 'Insomnia': return '2002';
         case 'Batman Begins': return '2005';
         case 'The Prestige': return '2006';
         case 'The Dark Knight': return '2008';

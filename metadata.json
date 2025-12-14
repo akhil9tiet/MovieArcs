@@ -1,5 +1,5 @@
 {
-  "name": "Animated D3 Line Chart",
+  "name": "Christopher Nolan Filmograpohy",
   "description": "A pixel-perfect, high-performance animated line chart using D3.js and React, featuring smooth drawing animations, gradient fills, and responsive design.",
   "requestFramePermissions": [
     "display-capture"
