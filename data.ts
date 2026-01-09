@@ -1,5 +1,6 @@
 
-import { DetailedDataPoint, DataPoint, MovieKey } from './types';
+import { DetailedDataPoint, DataPoint, MovieKey, MovieMetadata } from './types';
+import * as d3 from 'd3';
 
 export const storyArcRaw = [
   { point: 1,  label: "Opening image",          value: 1 },
@@ -34,6 +35,21 @@ export const storyArcData: DataPoint[] = storyArcRaw.map(item => ({
   label: item.label
 }));
 
+export const movieMetadata: Record<MovieKey, MovieMetadata> = {
+  'Following': { year: 1998, boxOffice: 48482, imdbRating: 7.5, genre: "Neo-noir, Thriller" },
+  'Memento': { year: 2000, boxOffice: 40047078, imdbRating: 8.4, genre: "Mystery, Thriller" },
+  'Insomnia': { year: 2002, boxOffice: 113758770, imdbRating: 7.2, genre: "Psychological Thriller, Crime" },
+  'Batman Begins': { year: 2005, boxOffice: 373672993, imdbRating: 8.2, genre: "Superhero, Action" },
+  'The Prestige': { year: 2006, boxOffice: 109676311, imdbRating: 8.5, genre: "Drama, Mystery, Thriller" },
+  'The Dark Knight': { year: 2008, boxOffice: 1006234167, imdbRating: 9.0, genre: "Superhero, Crime, Thriller" },
+  'Inception': { year: 2010, boxOffice: 870792649, imdbRating: 8.8, genre: "Science Fiction, Action, Thriller" },
+  'The Dark Knight Rises': { year: 2012, boxOffice: 1081169825, imdbRating: 8.4, genre: "Superhero, Action, Thriller" },
+  'Interstellar': { year: 2014, boxOffice: 773430538, imdbRating: 8.7, genre: "Science Fiction, Adventure, Drama" },
+  'Dunkirk': { year: 2017, boxOffice: 527016307, imdbRating: 7.9, genre: "War, Drama, Thriller" },
+  'Tenet': { year: 2020, boxOffice: 365304105, imdbRating: 7.3, genre: "Science Fiction, Action, Thriller" },
+  'Oppenheimer': { year: 2023, boxOffice: 960428540, imdbRating: 8.4, genre: "Biographical Drama, Historical" },
+};
+
 export const followingData: DetailedDataPoint[] = [
   { x: 1, value: 0, label: "Bill shadowing strangers", emotion: "Curiosity" },
   { x: 2, value: 1, label: "Setting the rules of following", emotion: "Control" },
@@ -67,19 +83,19 @@ export const mementoData: DetailedDataPoint[] = [
   { x: 3, value: -3, label: "Talking to 'Sammy' on the phone", emotion: "Loneliness" },
   { x: 4, value: 2, label: "Tattooing 'Fact 5'", emotion: "Purpose" },
   { x: 5, value: -4, label: "Meeting Natalie at the bar", emotion: "Suspicion" },
-  { x: 6, value: -1, label: "Natalie tests Leonard (Spit drink)", emotion: "Disgust" },
+  { x: 6, value: -1, label: "Natalie tests Leonard", emotion: "Disgust" },
   { x: 7, value: -5, label: "Remembering his wife's death", emotion: "Trauma" },
   { x: 8, value: 3, label: "Finding the Jaguar and suit", emotion: "Transformation" },
-  { x: 9, value: 1, label: "Chasing Dodd (or being chased?)", emotion: "Adrenaline" },
+  { x: 9, value: 1, label: "Chasing Dodd", emotion: "Adrenaline" },
   { x: 10, value: -6, label: "Discovering he attacked Dodd", emotion: "Guilt" },
-  { x: 11, value: 2, label: "Sleeping with Natalie (False comfort)", emotion: "Intimacy" },
+  { x: 11, value: 2, label: "Sleeping with Natalie", emotion: "Intimacy" },
   { x: 12, value: -8, label: "Burning his wife's possessions", emotion: "Grief" },
-  { x: 13, value: -7, label: "Hiring the escort to reenact the night", emotion: "Despair" },
+  { x: 13, value: -7, label: "Hiring the escort to reenact", emotion: "Despair" },
   { x: 14, value: -4, label: "Meeting Teddy at the warehouse", emotion: "Distrust" },
   { x: 15, value: -2, label: "Arriving at the abandoned building", emotion: "Tension" },
   { x: 16, value: -9, label: "Killing Jimmy Grantz", emotion: "Horror" },
   { x: 17, value: -10, label: "Jimmy whispers 'Sammy'", emotion: "Shock" },
-  { x: 18, value: -8, label: "Teddy reveals the truth (You're Sammy)", emotion: "Betrayal" },
+  { x: 18, value: -8, label: "Teddy reveals the truth", emotion: "Betrayal" },
   { x: 19, value: -5, label: "Leonard rejects the truth", emotion: "Denial" },
   { x: 20, value: -3, label: "Deciding to set up Teddy", emotion: "Calculation" },
   { x: 21, value: 0, label: "Writing 'Don't believe his lies'", emotion: "Determination" },
@@ -112,314 +128,368 @@ export const insomniaData: DetailedDataPoint[] = [
   { x: 21, value: 1, label: "Finch dead, Dormer shot", emotion: "Resolution" },
   { x: 22, value: 3, label: "'Let me sleep'", emotion: "Peace" },
   { x: 23, value: 5, label: "Stopping Ellie from hiding evidence", emotion: "Redemption" },
-  { x: 24, value: 6, label: "The Midnight Sun fades (metaphorically)", emotion: "Rest" },
+  { x: 24, value: 6, label: "The Midnight Sun fades", emotion: "Rest" },
 ];
 
 export const batmanBeginsData: DetailedDataPoint[] = [
-  { x: 1, value: -5, label: "Young Bruce falls into the well", emotion: "Fear" },
-  { x: 2, value: -9, label: "Parents murdered in the alley", emotion: "Trauma" },
-  { x: 3, value: -6, label: "Chill's parole hearing", emotion: "Injustice" },
-  { x: 4, value: -4, label: "Leaving Gotham to explore criminal mind", emotion: "Lost" },
-  { x: 5, value: -3, label: "Bhutan prison fight", emotion: "Rage" },
-  { x: 6, value: 2, label: "Ducard offers a path", emotion: "Hope" },
-  { x: 7, value: 4, label: "Training with League of Shadows", emotion: "Growth" },
-  { x: 8, value: 5, label: "Refusing to execute the criminal", emotion: "Integrity" },
-  { x: 9, value: 3, label: "Saving Ducard from fire", emotion: "Compassion" },
-  { x: 10, value: 6, label: "Return to Gotham with purpose", emotion: "Determination" },
-  { x: 11, value: 4, label: "Meeting Gordon / Lucius Fox", emotion: "Alliance" },
-  { x: 12, value: 7, label: "Creating the Batman persona", emotion: "Identity" },
-  { x: 13, value: 8, label: "First night out: Falcone captured", emotion: "Success" },
-  { x: 14, value: -2, label: "Scarecrow encounter, fear toxin", emotion: "Setback" },
-  { x: 15, value: -4, label: "Faking drunken behavior at party", emotion: "Sacrifice" },
-  { x: 16, value: -7, label: "Poisoned by Crane, on fire", emotion: "Fear" },
-  { x: 17, value: 0, label: "Saved by Fox, antidote", emotion: "Recovery" },
-  { x: 18, value: -6, label: "League attacks Gotham", emotion: "Crisis" },
-  { x: 19, value: -8, label: "Wayne Manor burns down", emotion: "Loss" },
-  { x: 20, value: 2, label: "Saving guests, gearing up", emotion: "Heroism" },
-  { x: 21, value: 5, label: "Monorail fight vs Ra's al Ghul", emotion: "Climax" },
-  { x: 22, value: 6, label: "I won't kill you, but I don't have to save you", emotion: "Resolution" },
-  { x: 23, value: 7, label: "Buying back the company", emotion: "Restoration" },
-  { x: 24, value: 8, label: "Gordon signals the Joker card", emotion: "The Call" },
+  { x: 1, value: -2, label: "Falling into the well", emotion: "Fear" },
+  { x: 2, value: -4, label: "Parent's murder", emotion: "Trauma" },
+  { x: 3, value: -6, label: "Chill's trial / Falcone confrontation", emotion: "Impotence" },
+  { x: 4, value: -2, label: "Training with Ra's al Ghul", emotion: "Empowerment" },
+  { x: 5, value: 1, label: "Refusing to execute the prisoner", emotion: "Integrity" },
+  { x: 6, value: 3, label: "Returning to Gotham", emotion: "Purpose" },
+  { x: 7, value: 2, label: "Assembling the gear", emotion: "Preparation" },
+  { x: 8, value: 5, label: "First night out (Falcone shipment)", emotion: "Triumph" },
+  { x: 9, value: 2, label: "Investigating the drugs", emotion: "Detective" },
+  { x: 10, value: -3, label: "Scarecrow toxins Batman", emotion: "Panic" },
+  { x: 11, value: -5, label: "Saved by Alfred / Antidote", emotion: "Recovery" },
+  { x: 12, value: 1, label: "Rachel discovers Dr. Crane", emotion: "Revelation" },
+  { x: 13, value: 4, label: "Batman saves Rachel (Tumbler chase)", emotion: "Action" },
+  { x: 14, value: 0, label: "Wayne Manor party / Earle fires Fox", emotion: "Conflict" },
+  { x: 15, value: -2, label: "Ra's al Ghul returns", emotion: "Betrayal" },
+  { x: 16, value: -8, label: "Wayne Manor burns", emotion: "Loss" },
+  { x: 17, value: -6, label: "Gotham plunges into fear", emotion: "Chaos" },
+  { x: 18, value: -3, label: "Gordon takes the Tumbler", emotion: "Hope" },
+  { x: 19, value: 2, label: "Battle on the train", emotion: "Combat" },
+  { x: 20, value: 6, label: "I won't kill you, but I don't have to save you", emotion: "Justice" },
+  { x: 21, value: 8, label: "Train crash / Ra's defeat", emotion: "Victory" },
+  { x: 22, value: 5, label: "Buying back the bank", emotion: "Success" },
+  { x: 23, value: 4, label: "Talking to Gordon on the roof", emotion: "Alliance" },
+  { x: 24, value: 6, label: "The Joker card", emotion: "Anticipation" },
 ];
 
-export const prestigeData: DetailedDataPoint[] = [
-  { x: 1, value: 0, label: "The water tank trick / Opening monologue", emotion: "Mystery" },
-  { x: 2, value: 3, label: "Angier & Borden working as shills", emotion: "Friendship" },
-  { x: 3, value: -8, label: "Julia dies in the water tank", emotion: "Tragedy" },
-  { x: 4, value: -7, label: "Angier blames Borden at funeral", emotion: "Conflict" },
-  { x: 5, value: -5, label: "The Bullet Catch sabotage", emotion: "Rivalry" },
-  { x: 6, value: -4, label: "Borden meets Sarah / The secret", emotion: "Obsession" },
-  { x: 7, value: -6, label: "The Transported Man debut", emotion: "Jealousy" },
-  { x: 8, value: 2, label: "Angier travels to find Tesla", emotion: "Hope" },
-  { x: 9, value: 4, label: "Borden's happy life with Sarah", emotion: "Love" },
-  { x: 10, value: -3, label: "Sabotaging the bird cage trick", emotion: "Revenge" },
-  { x: 11, value: 5, label: "Angier's new Transported Man", emotion: "Success" },
-  { x: 12, value: -7, label: "Borden interferes, Angier breaks leg", emotion: "Cruelty" },
-  { x: 13, value: -2, label: "Angier sends Olivia to spy", emotion: "Deceit" },
-  { x: 14, value: 6, label: "Tesla's machine works (cloning)", emotion: "Power" },
-  { x: 15, value: 8, label: "Angier's Real Transported Man", emotion: "Triumph" },
-  { x: 16, value: -4, label: "Borden baffled and defeated", emotion: "Defeat" },
-  { x: 17, value: -9, label: "Sarah commits suicide", emotion: "Tragedy" },
-  { x: 18, value: -5, label: "Borden investigates backstage", emotion: "Trap" },
-  { x: 19, value: -7, label: "Angier dies, Borden framed", emotion: "Twist" },
-  { x: 20, value: -8, label: "Borden in prison, Lord Caldlow reveal", emotion: "Betrayal" },
-  { x: 21, value: 5, label: "Fallon reveals himself as Borden", emotion: "Reveal" },
-  { x: 22, value: 2, label: "Shooting Angier in the theater", emotion: "Revenge" },
-  { x: 23, value: 6, label: "The secret of the twins explained", emotion: "Clarification" },
-  { x: 24, value: 4, label: "The rows of tanks, abracadabra", emotion: "Awe" },
+export const thePrestigeData: DetailedDataPoint[] = [
+  { x: 1, value: 0, label: "The transported man trick", emotion: "Wonder" },
+  { x: 2, value: -2, label: "Julia dies in the water tank", emotion: "Tragedy" },
+  { x: 3, value: -5, label: "The rivalry begins", emotion: "Hate" },
+  { x: 4, value: -1, label: "Borden's secret life", emotion: "Mystery" },
+  { x: 5, value: 2, label: "Angier spies on Borden", emotion: "Obsession" },
+  { x: 6, value: 3, label: "Angier sabotages Borden", emotion: "Revenge" },
+  { x: 7, value: -2, label: "Borden sabotages Angier", emotion: "Retaliation" },
+  { x: 8, value: 1, label: "Meeting Tesla", emotion: "Hope" },
+  { x: 9, value: -3, label: "Olivia double cross", emotion: "Deception" },
+  { x: 10, value: -4, label: "Borden's Transported Man success", emotion: "Envy" },
+  { x: 11, value: -6, label: "Angier becomes desperate", emotion: "Desperation" },
+  { x: 12, value: 2, label: "Tesla's machine works", emotion: "Power" },
+  { x: 13, value: 5, label: "The Real Transported Man", emotion: "Triumph" },
+  { x: 14, value: 1, label: "Borden investigates backstage", emotion: "Suspicion" },
+  { x: 15, value: -7, label: "Angier drowns (The duplicate)", emotion: "Horror" },
+  { x: 16, value: -9, label: "Borden framed for murder", emotion: "Injustice" },
+  { x: 17, value: -8, label: "Borden in prison", emotion: "Helplessness" },
+  { x: 18, value: 4, label: "Lord Caldlow revealed as Angier", emotion: "Shock" },
+  { x: 19, value: 6, label: "Fallon is the twin", emotion: "Revelation" },
+  { x: 20, value: 8, label: "Borden shoots Angier", emotion: "Climax" },
+  { x: 21, value: -2, label: "The prestige of the trick revealed", emotion: "Awe" },
+  { x: 22, value: -5, label: "The tanks of dead clones", emotion: "Horror" },
+  { x: 23, value: 1, label: "Borden reunites with daughter", emotion: "Peace" },
+  { x: 24, value: 0, label: "Abracadabra", emotion: "Mystery" },
 ];
 
-export const darkKnightData: DetailedDataPoint[] = [
-  { x: 1, value: -2, label: "Joker's bank heist", emotion: "Chaos" },
-  { x: 2, value: 5, label: "Batman stops Scarecrow / copycats", emotion: "Control" },
-  { x: 3, value: 4, label: "Bruce believes in Harvey Dent", emotion: "Hope" },
-  { x: 4, value: -3, label: "Joker kills Gambol", emotion: "Threat" },
-  { x: 5, value: 7, label: "Lau extraction from Hong Kong", emotion: "Triumph" },
-  { x: 6, value: -5, label: "Joker kills judge & commissioner", emotion: "Fear" },
-  { x: 7, value: 6, label: "Bruce throws fundraiser for Dent", emotion: "Alliance" },
-  { x: 8, value: -4, label: "Joker crashes the party", emotion: "Terror" },
-  { x: 9, value: 2, label: "Batman saves Rachel", emotion: "Relief" },
-  { x: 10, value: -7, label: "Loeb's funeral / Gordon 'dies'", emotion: "Loss" },
-  { x: 11, value: -3, label: "Batman interrogates Maroni", emotion: "Desperation" },
-  { x: 12, value: 8, label: "Truck flip chase / Gordon lives", emotion: "Victory" },
-  { x: 13, value: -2, label: "Interrogation room with Joker", emotion: "Conflict" },
-  { x: 14, value: -6, label: "Rachel & Dent kidnapped", emotion: "Panic" },
-  { x: 15, value: -10, label: "Rachel dies in explosion", emotion: "Devastation" },
-  { x: 16, value: -9, label: "Dent disfigured (Two-Face)", emotion: "Tragedy" },
-  { x: 17, value: -5, label: "Joker targets Reese / Hospital blown", emotion: "Chaos" },
-  { x: 18, value: -4, label: "The Ferry dilemma", emotion: "Tension" },
-  { x: 19, value: 6, label: "Citizens refuse to blow up ferries", emotion: "Humanity" },
-  { x: 20, value: 7, label: "Batman captures Joker", emotion: "Success" },
-  { x: 21, value: -6, label: "Two-Face holds Gordon's family", emotion: "Horror" },
-  { x: 22, value: -3, label: "Batman kills Dent to save boy", emotion: "Sacrifice" },
-  { x: 23, value: -1, label: "Taking the blame / The Lie", emotion: "Burden" },
-  { x: 24, value: 5, label: "Running into the dark / A Legend", emotion: "Myth" },
+export const theDarkKnightData: DetailedDataPoint[] = [
+  { x: 1, value: 5, label: "The Bank Heist", emotion: "Chaos" },
+  { x: 2, value: 3, label: "Batman takes down Scarecrow", emotion: "Competence" },
+  { x: 3, value: 4, label: "Harvey Dent's campaign", emotion: "Hope" },
+  { x: 4, value: -2, label: "Joker crashes the mob meeting", emotion: "Threat" },
+  { x: 5, value: 1, label: "Batman extracts Lau", emotion: "Success" },
+  { x: 6, value: -4, label: "Joker kills 'Batman' copycat", emotion: "Terror" },
+  { x: 7, value: -3, label: "Wayne penthouse party crash", emotion: "Danger" },
+  { x: 8, value: -1, label: "Saving Rachel", emotion: "Relief" },
+  { x: 9, value: -5, label: "Gordon 'killed' protecting Mayor", emotion: "Loss" },
+  { x: 10, value: -2, label: "Dent claims he is Batman", emotion: "Sacrifice" },
+  { x: 11, value: 2, label: "The chase sequence", emotion: "Action" },
+  { x: 12, value: 6, label: "Truck flip / Gordon alive", emotion: "Victory" },
+  { x: 13, value: -4, label: "Interrogation room", emotion: "Intensity" },
+  { x: 14, value: -9, label: "Rachel dies / Dent burns", emotion: "Devastation" },
+  { x: 15, value: -7, label: "Joker blows up hospital", emotion: "Anarchy" },
+  { x: 16, value: -8, label: "Gotham evacuations / Two-Face rampage", emotion: "Fear" },
+  { x: 17, value: -5, label: "The ferries dilemma", emotion: "Tension" },
+  { x: 18, value: 2, label: "Sonar vision activation", emotion: "Determination" },
+  { x: 19, value: 4, label: "Prewitt building assault", emotion: "Focus" },
+  { x: 20, value: 7, label: "Joker captured / Ferries safe", emotion: "Triumph" },
+  { x: 21, value: -6, label: "Standoff for Gordon's family", emotion: "Despair" },
+  { x: 22, value: -3, label: "Dent falls / Batman takes blame", emotion: "Martyrdom" },
+  { x: 23, value: 0, label: "The Dark Knight runs", emotion: "Legend" },
+  { x: 24, value: 2, label: "A watchful protector", emotion: "Resolve" },
 ];
 
-export const inceptionMovieData: DetailedDataPoint[] = [
-  { x: 1, value: -2, label: "Waking up on the beach, confusion", emotion: "Unease" },
-  { x: 2, value: -4, label: "Failed extraction mission against Saito", emotion: "Frustration" },
-  { x: 3, value: -6, label: "Cobol Engineering threat, fleeing", emotion: "Anxiety" },
-  { x: 4, value: 3, label: "Saito makes the offer for Inception", emotion: "Hope" },
-  { x: 5, value: 5, label: "Recruiting Ariadne in Paris, dream physics", emotion: "Joy" },
-  { x: 6, value: -5, label: "Mal sabotages the bridge test", emotion: "Fear" },
-  { x: 7, value: 2, label: "Recruiting Eames and Yusuf", emotion: "Confidence" },
-  { x: 8, value: -3, label: "Chase in Mombasa, narrow escape", emotion: "Tension" },
-  { x: 9, value: 4, label: "Saito buys the airline, plan set", emotion: "Triumph" },
-  { x: 10, value: 1, label: "Boarding the flight, mission begins", emotion: "Focus" },
-  { x: 11, value: -6, label: "Train hits in rainy city, kidnapping goes wrong", emotion: "Shock" },
-  { x: 12, value: -8, label: "Saito shot, limbo revelation", emotion: "Despair" },
-  { x: 13, value: 3, label: "Eames impersonates Browning, planting idea", emotion: "Relief" },
-  { x: 14, value: -2, label: "Van chase, defending the dreamer", emotion: "Tension" },
-  { x: 15, value: 1, label: "Entering the Hotel level", emotion: "Focus" },
-  { x: 16, value: 4, label: "Gravity shift fight hallway sequence", emotion: "Excitement" },
-  { x: 17, value: 2, label: "Infiltrating the Snow Fortress", emotion: "Hope" },
-  { x: 18, value: -9, label: "Mal shoots Fischer, mission failing", emotion: "Devastation" },
-  { x: 19, value: -5, label: "Ariadne & Cobb drop into Limbo", emotion: "Uncertainty" },
-  { x: 20, value: 7, label: "Confronting Mal, letting her go", emotion: "Catharsis" },
-  { x: 21, value: 8, label: "Riding the kicks back up levels", emotion: "Thrill" },
-  { x: 22, value: 6, label: "Waking up on the plane, silent nods", emotion: "Relief" },
-  { x: 23, value: 9, label: "Through customs, arrival home", emotion: "Happiness" },
-  { x: 24, value: 10, label: "Spinning the top, children turn around", emotion: "Elation" },
+export const inceptionData: DetailedDataPoint[] = [
+  { x: 1, value: -2, label: "Washed up on shore", emotion: "Confusion" },
+  { x: 2, value: 2, label: "The extraction (Saito)", emotion: "Action" },
+  { x: 3, value: -3, label: "Mal sabotages the dream", emotion: "Failure" },
+  { x: 4, value: 1, label: "Saito's offer (Inception)", emotion: "Opportunity" },
+  { x: 5, value: 3, label: "Recruiting the team", emotion: "Excitement" },
+  { x: 6, value: 0, label: "Training Ariadne / Physics bending", emotion: "Wonder" },
+  { x: 7, value: -4, label: "Cobb reveals Mal's projection", emotion: "Guilt" },
+  { x: 8, value: 4, label: "The flight begins", emotion: "Anticipation" },
+  { x: 9, value: -2, label: "Level 1: Rain / Kidnap", emotion: "Panic" },
+  { x: 10, value: -5, label: "Saito shot / Limbo risk revealed", emotion: "Stakes" },
+  { x: 11, value: 2, label: "Level 2: Hotel / Fischer hook", emotion: "Deception" },
+  { x: 12, value: -3, label: "Mr. Charles routine", emotion: "Tension" },
+  { x: 13, value: 3, label: "Level 3: Snow fortress", emotion: "Scale" },
+  { x: 14, value: 5, label: "Zero-G hallway fight", emotion: "Spectacle" },
+  { x: 15, value: -6, label: "Mal shoots Fischer", emotion: "Disaster" },
+  { x: 16, value: -8, label: "All is lost (Mission failed?)", emotion: "Hopelessness" },
+  { x: 17, value: -4, label: "Entering Limbo", emotion: "Risk" },
+  { x: 18, value: -1, label: "Confronting Mal", emotion: "Catharsis" },
+  { x: 19, value: 2, label: "Fischer saved / The Kick chain", emotion: "Momentum" },
+  { x: 20, value: 6, label: "Waking up levels", emotion: "Relief" },
+  { x: 21, value: 1, label: "Finding old Saito", emotion: "Resolution" },
+  { x: 22, value: 5, label: "Waking on the plane", emotion: "Success" },
+  { x: 23, value: 7, label: "Through customs", emotion: "Freedom" },
+  { x: 24, value: 4, label: "The spinning top", emotion: "Ambiguity" },
 ];
 
 export const darkKnightRisesData: DetailedDataPoint[] = [
-  { x: 1, value: -3, label: "Plane heist, Bane introduced", emotion: "Threat" },
-  { x: 2, value: -5, label: "Dent Day, Bruce is a recluse", emotion: "Stagnation" },
-  { x: 3, value: 0, label: "Selina Kyle steals pearls", emotion: "Intrigue" },
-  { x: 4, value: -4, label: "Bane attacks stock exchange", emotion: "Violence" },
-  { x: 5, value: 4, label: "The Bat returns to chase Bane", emotion: "Hope" },
-  { x: 6, value: -3, label: "Bruce bankrupt, Daggett's plan", emotion: "Failure" },
-  { x: 7, value: 2, label: "Trusting Miranda Tate", emotion: "Trust" },
-  { x: 8, value: -5, label: "Catwoman leads Batman to Bane's trap", emotion: "Danger" },
-  { x: 9, value: -10, label: "Bane breaks Batman's back", emotion: "Defeat" },
-  { x: 10, value: -9, label: "Bruce wakes in the Pit", emotion: "Despair" },
-  { x: 11, value: -8, label: "Gotham under siege, stadium explosion", emotion: "Chaos" },
-  { x: 12, value: -7, label: "Police trapped underground", emotion: "Hopelessness" },
-  { x: 13, value: -6, label: "Bruce fails the climb", emotion: "Failure" },
-  { x: 14, value: 6, label: "Rising without the rope", emotion: "Triumph" },
-  { x: 15, value: 5, label: "Return to Gotham on ice", emotion: "Determination" },
-  { x: 16, value: 4, label: "Freeing the police force", emotion: "Rally" },
-  { x: 17, value: 0, label: "War in the streets", emotion: "Conflict" },
-  { x: 18, value: 5, label: "Batman defeats Bane", emotion: "Victory" },
-  { x: 19, value: -7, label: "Talia al Ghul reveal", emotion: "Betrayal" },
-  { x: 20, value: 2, label: "Chasing the bomb truck", emotion: "Tension" },
-  { x: 21, value: 8, label: "Flying the bomb over the bay", emotion: "Sacrifice" },
-  { x: 22, value: -4, label: "Alfred weeps at the grave", emotion: "Grief" },
-  { x: 23, value: 7, label: "Blake finds the Batcave", emotion: "Legacy" },
-  { x: 24, value: 10, label: "Alfred sees Bruce in Florence", emotion: "Happiness" },
+  { x: 1, value: 2, label: "Plane extraction", emotion: "Spectacle" },
+  { x: 2, value: -3, label: "Reclusive Bruce Wayne", emotion: "Decay" },
+  { x: 3, value: -1, label: "Selina Kyle steals pearls", emotion: "Intrigue" },
+  { x: 4, value: -4, label: "Bane attacks stock exchange", emotion: "Threat" },
+  { x: 5, value: 1, label: "The Bat returns (Tunnel chase)", emotion: "Action" },
+  { x: 6, value: -2, label: "Bruce loses his fortune", emotion: "Loss" },
+  { x: 7, value: 0, label: "Trusting Miranda Tate", emotion: "Romance" },
+  { x: 8, value: -5, label: "Catwoman leads Batman to Bane", emotion: "Betrayal" },
+  { x: 9, value: -9, label: "Bane breaks the Bat", emotion: "Defeat" },
+  { x: 10, value: -10, label: "Waking up in the Pit", emotion: "Despair" },
+  { x: 11, value: -8, label: "Gotham under siege", emotion: "Oppression" },
+  { x: 12, value: -6, label: "Gordon's resistance", emotion: "Struggle" },
+  { x: 13, value: -4, label: "Attempting the climb (Fail)", emotion: "Failure" },
+  { x: 14, value: -2, label: "The leap of faith (Rise)", emotion: "Resurrection" },
+  { x: 15, value: 3, label: "Batman returns to Gotham", emotion: "Hope" },
+  { x: 16, value: 5, label: "Freeing the police", emotion: "Rally" },
+  { x: 17, value: 4, label: "War in the streets", emotion: "Battle" },
+  { x: 18, value: 2, label: "Batman fights Bane", emotion: "Strength" },
+  { x: 19, value: -7, label: "Talia al Ghul revealed", emotion: "Shock" },
+  { x: 20, value: -3, label: "Chasing the bomb truck", emotion: "Urgency" },
+  { x: 21, value: 6, label: "Flying the bomb over the bay", emotion: "Sacrifice" },
+  { x: 22, value: -2, label: "Funeral", emotion: "Grief" },
+  { x: 23, value: 7, label: "Blake finds the cave", emotion: "Legacy" },
+  { x: 24, value: 8, label: "Alfred sees Bruce in Florence", emotion: "Peace" },
 ];
 
-export const interstellarMovieData: DetailedDataPoint[] = [
-  { x: 1, value: -4, label: "Opening on Earth, dust storms, failing crops", emotion: "Frustration" },
-  { x: 2, value: -2, label: "Cooper with family, school conflict", emotion: "Unease" },
-  { x: 3, value: 2, label: "Discovering NASA’s secret base", emotion: "Hope" },
-  { x: 4, value: -7, label: "Decision to leave family behind", emotion: "Anxiety" },
-  { x: 5, value: 5, label: "Launch into space", emotion: "Joy" },
-  { x: 6, value: 3, label: "Arrival at Saturn wormhole", emotion: "Confidence" },
-  { x: 7, value: -6, label: "First planet (Miller’s water world), disaster", emotion: "Sadness" },
-  { x: 8, value: -8, label: "Doyle’s death, time dilation shock", emotion: "Betrayal" },
-  { x: 9, value: -9, label: "Return to Endurance, decades lost", emotion: "Devastation" },
-  { x: 10, value: -7, label: "Watching Murph’s angry video messages", emotion: "Anxiety" },
-  { x: 11, value: 1, label: "Journey to Mann’s planet", emotion: "Relief" },
-  { x: 12, value: -8, label: "Mann’s betrayal", emotion: "Deep sadness" },
-  { x: 13, value: -5, label: "Mann’s sabotage, Endurance damaged", emotion: "Tension" },
-  { x: 14, value: 6, label: "Docking sequence (Cooper saves Endurance)", emotion: "Achievement" },
-  { x: 15, value: -3, label: "Cooper decides to sacrifice himself", emotion: "Conflict" },
-  { x: 16, value: -10, label: "Entering the black hole", emotion: "Despair" },
-  { x: 17, value: 4, label: "Tesseract reveal, communication with Murph", emotion: "Satisfaction" },
-  { x: 18, value: 8, label: "Cooper realizes love bridges dimensions", emotion: "Triumph" },
-  { x: 19, value: 9, label: "Murph solves equation on Earth", emotion: "Celebration" },
-  { x: 20, value: 6, label: "Cooper rescued near Saturn", emotion: "Relief" },
-  { x: 21, value: 7, label: "Reunion with elderly Murph", emotion: "Happiness" },
-  { x: 22, value: 2, label: "Murph urges Cooper to find Brand", emotion: "Hope" },
-  { x: 23, value: 5, label: "Brand on Edmunds’ planet, new beginning", emotion: "Joy" },
-  { x: 24, value: 10, label: "Closing image: humanity’s survival assured", emotion: "Elation" },
+export const interstellarData: DetailedDataPoint[] = [
+  { x: 1, value: -2, label: "Earth dying / Dust storms", emotion: "Desolation" },
+  { x: 2, value: -1, label: "Murph's ghost / The coordinates", emotion: "Mystery" },
+  { x: 3, value: 2, label: "Discovering NASA", emotion: "Wonder" },
+  { x: 4, value: 0, label: "The mission choice", emotion: "Duty" },
+  { x: 5, value: -5, label: "Leaving Murph behind", emotion: "Heartbreak" },
+  { x: 6, value: 4, label: "Launch / Leaving Earth", emotion: "Awe" },
+  { x: 7, value: 3, label: "Wormhole travel", emotion: "Transcendence" },
+  { x: 8, value: 0, label: "Miller's Planet (Waves)", emotion: "Danger" },
+  { x: 9, value: -6, label: "23 years lost", emotion: "Grief" },
+  { x: 10, value: -4, label: "Messages from home", emotion: "Regret" },
+  { x: 11, value: -1, label: "Mann's Planet debate", emotion: "Conflict" },
+  { x: 12, value: -7, label: "Dr. Mann's betrayal", emotion: "Shock" },
+  { x: 13, value: -5, label: "Docking sequence", emotion: "Intensity" },
+  { x: 14, value: -3, label: "Slingshot maneuver", emotion: "Desperation" },
+  { x: 15, value: -8, label: "Cooper detaches", emotion: "Sacrifice" },
+  { x: 16, value: 5, label: "Inside the Tesseract", emotion: "Revelation" },
+  { x: 17, value: 7, label: "Communicating with Murph", emotion: "Connection" },
+  { x: 18, value: 6, label: "Murph solves gravity", emotion: "Eureka" },
+  { x: 19, value: 3, label: "Tesseract closes", emotion: "Peace" },
+  { x: 20, value: 4, label: "Cooper Station rescue", emotion: "Relief" },
+  { x: 21, value: 5, label: "Reuniting with elderly Murph", emotion: "Closure" },
+  { x: 22, value: 2, label: "No parent should watch their child die", emotion: "Bittersweet" },
+  { x: 23, value: 6, label: "Stealing the ship", emotion: "Adventure" },
+  { x: 24, value: 7, label: "Finding Brand", emotion: "Hope" },
 ];
 
 export const dunkirkData: DetailedDataPoint[] = [
-  { x: 1, value: -6, label: "Propaganda leaflets falling, alone", emotion: "Isolation" },
-  { x: 2, value: -8, label: "Ambushed at the barricade, running", emotion: "Terror" },
-  { x: 3, value: -3, label: "Meeting Gibson, burying the soldier", emotion: "Solidarity" },
-  { x: 4, value: -5, label: "Attempting to board with stretcher", emotion: "Rejection" },
-  { x: 5, value: -9, label: "Hospital ship torpedoed, drowning", emotion: "Panic" },
-  { x: 6, value: 2, label: "Mr. Dawson departs on the Moonstone", emotion: "Duty" },
-  { x: 7, value: 0, label: "Farrier engages in first dogfight", emotion: "Focus" },
-  { x: 8, value: -4, label: "Rescuing the Shivering Soldier", emotion: "Trauma" },
-  { x: 9, value: -7, label: "The Mole under dive bomber attack", emotion: "Despair" },
-  { x: 10, value: -5, label: "Hiding in the beached trawler", emotion: "Suspicion" },
-  { x: 11, value: -8, label: "Collins ditches plane, canopy stuck", emotion: "Claustrophobia" },
-  { x: 12, value: -6, label: "Shivering Soldier causes George's injury", emotion: "Conflict" },
-  { x: 13, value: -5, label: "Target practice on the trawler", emotion: "Tension" },
-  { x: 14, value: 5, label: "Farrier shoots down Heinkel", emotion: "Victory" },
-  { x: 15, value: -8, label: "Trawler sinks, Gibson drowns", emotion: "Horror" },
-  { x: 16, value: -9, label: "George dies on the boat", emotion: "Tragedy" },
-  { x: 17, value: 3, label: "Seeing the Little Ships arrive", emotion: "Hope" },
-  { x: 18, value: 4, label: "Moonstone rescues oil-slick survivors", emotion: "Relief" },
-  { x: 19, value: 2, label: "Farrier out of fuel, gliding", emotion: "Sacrifice" },
-  { x: 20, value: 6, label: "Soldiers board the Moonstone", emotion: "Salvation" },
-  { x: 21, value: 5, label: "Collins saved by Peter", emotion: "Gratitude" },
-  { x: 22, value: -2, label: "Train ride home, fearing scorn", emotion: "Anxiety" },
-  { x: 23, value: 7, label: "Reading Churchill's speech", emotion: "Pride" },
-  { x: 24, value: 8, label: "Farrier burns plane, captured", emotion: "Resilience" },
+  { x: 1, value: -4, label: "Paper flyers / Ambush", emotion: "Fear" },
+  { x: 2, value: -2, label: "The Beach (The Mole)", emotion: "Isolation" },
+  { x: 3, value: 1, label: "Mr. Dawson's boat departs", emotion: "Duty" },
+  { x: 4, value: 0, label: "Farrier in the Spitfire", emotion: "Focus" },
+  { x: 5, value: -3, label: "Dive bombers attack beach", emotion: "Helplessness" },
+  { x: 6, value: -1, label: "Picking up the shivering soldier", emotion: "Tension" },
+  { x: 7, value: -5, label: "Torpedo hits the medical ship", emotion: "Panic" },
+  { x: 8, value: 2, label: "Dogfight success", emotion: "Victory" },
+  { x: 9, value: -6, label: "Soldiers hiding in the trawler", emotion: "Claustrophobia" },
+  { x: 10, value: -4, label: "Tide rising / Holes in hull", emotion: "Dread" },
+  { x: 11, value: 3, label: "Moonstone rescues pilot", emotion: "Relief" },
+  { x: 12, value: -2, label: "George injured", emotion: "Tragedy" },
+  { x: 13, value: 4, label: "Little ships arrive", emotion: "Hope" },
+  { x: 14, value: -3, label: "Oil in the water", emotion: "Danger" },
+  { x: 15, value: 5, label: "Farrier shoots down bomber", emotion: "Heroism" },
+  { x: 16, value: -5, label: "Farrier out of fuel", emotion: "Sacrifice" },
+  { x: 17, value: 2, label: "Rescuing soldiers from oil", emotion: "Action" },
+  { x: 18, value: 6, label: "Evacuation success", emotion: "Triumph" },
+  { x: 19, value: -1, label: "Farrier lands in enemy zone", emotion: "Acceptance" },
+  { x: 20, value: 3, label: "Train ride home", emotion: "Anxiety" },
+  { x: 21, value: 5, label: "Reading Churchill's speech", emotion: "Pride" },
+  { x: 22, value: 4, label: "George is a hero", emotion: "Honor" },
+  { x: 23, value: 2, label: "Farrier captured", emotion: "Stoicism" },
+  { x: 24, value: 6, label: "The Spirit of Dunkirk", emotion: "Survival" },
 ];
 
 export const tenetData: DetailedDataPoint[] = [
-  { x: 1, value: -4, label: "Opera House siege", emotion: "Confusion" },
-  { x: 2, value: -6, label: "Torture and suicide pill", emotion: "Pain" },
-  { x: 3, value: 2, label: "Waking up, 'Welcome to the Afterlife'", emotion: "Curiosity" },
-  { x: 4, value: 1, label: "Learning about Inversion bullets", emotion: "Intrigue" },
-  { x: 5, value: 4, label: "Bungee jumping into Mumbai penthouse", emotion: "Boldness" },
-  { x: 6, value: -2, label: "Meeting Sator, threat established", emotion: "Danger" },
-  { x: 7, value: 3, label: "Freeport plane crash heist", emotion: "Excitement" },
-  { x: 8, value: -3, label: "Fighting inverted self in hallway", emotion: "Disorientation" },
-  { x: 9, value: -5, label: "Sator threatens Kat on yacht", emotion: "Tension" },
-  { x: 10, value: 5, label: "Tallinn highway heist success", emotion: "Adrenaline" },
-  { x: 11, value: -7, label: "Sator captures Kat, temporal pincer", emotion: "Fear" },
-  { x: 12, value: -8, label: "Inverted car crash, hypothermia", emotion: "Defeat" },
-  { x: 13, value: -4, label: "Inverting to save Kat", emotion: "Desperation" },
-  { x: 14, value: 1, label: "Fight in Freeport (other perspective)", emotion: "Realization" },
-  { x: 15, value: 4, label: "Neil reveals he knew, friendship", emotion: "Trust" },
-  { x: 16, value: -9, label: "Sator's dead man switch activated", emotion: "Doom" },
-  { x: 17, value: 2, label: "Stalsk-12 temporal pincer begins", emotion: "War" },
-  { x: 18, value: -5, label: "Ives and Protagonist trapped in tunnel", emotion: "Trapped" },
-  { x: 19, value: -6, label: "The locked gate, Sator shoots Kat", emotion: "Frustration" },
-  { x: 20, value: 6, label: "Inverted corpse unlocks gate (Neil)", emotion: "Sacrifice" },
-  { x: 21, value: 8, label: "Retrieving algorithm, Kat kills Sator", emotion: "Victory" },
-  { x: 22, value: -3, label: "Neil reveals he has to go back to die", emotion: "Tragedy" },
-  { x: 23, value: 5, label: "Killing Priya to protect Kat", emotion: "Resolution" },
-  { x: 24, value: 9, label: "Protagonist realizes he's the boss", emotion: "Mastery" },
+  { x: 1, value: 2, label: "Opera siege", emotion: "Action" },
+  { x: 2, value: -3, label: "Torture / Cyanide pill", emotion: "Test" },
+  { x: 3, value: 0, label: "Waking up / 'Tenet'", emotion: "Mystery" },
+  { x: 4, value: 1, label: "Inverted bullets lab", emotion: "Curiosity" },
+  { x: 5, value: -1, label: "Meeting Neil in Mumbai", emotion: "Alliance" },
+  { x: 6, value: 2, label: "Bungee jump into Priya's", emotion: "Spectacle" },
+  { x: 7, value: -2, label: "Meeting Kat / The painting", emotion: "Leverage" },
+  { x: 8, value: 3, label: "Plane crash heist (Oslo)", emotion: "Heist" },
+  { x: 9, value: 1, label: "Fighting inverted self", emotion: "Confusion" },
+  { x: 10, value: -4, label: "Sator threatens Kat", emotion: "Threat" },
+  { x: 11, value: 2, label: "Highway chase / Algorithm", emotion: "Intensity" },
+  { x: 12, value: -6, label: "Sator shoots Kat (Inverted)", emotion: "Shock" },
+  { x: 13, value: 0, label: "Inverting to save Kat", emotion: "Risk" },
+  { x: 14, value: -1, label: "Return to Oslo Freeport", emotion: "Stealth" },
+  { x: 15, value: 3, label: "Sator's plan revealed", emotion: "Stakes" },
+  { x: 16, value: 1, label: "Temporal Pincer Movement plan", emotion: "Strategy" },
+  { x: 17, value: 4, label: "Stalsk-12 battle begins", emotion: "Scale" },
+  { x: 18, value: -2, label: "Tripwire / Volkov", emotion: "Obstacle" },
+  { x: 19, value: -5, label: "Neil unlocks the gate (dies?)", emotion: "Sacrifice" },
+  { x: 20, value: 6, label: "Protagonist secures Algorithm", emotion: "Victory" },
+  { x: 21, value: 5, label: "Kat kills Sator", emotion: "Revenge" },
+  { x: 22, value: 2, label: "Neil reveals he was recruited by Protag", emotion: "Friendship" },
+  { x: 23, value: 4, label: "Neil walks back to die", emotion: "Fate" },
+  { x: 24, value: 6, label: "Protagonist saves Kat / End", emotion: "Protector" },
 ];
 
 export const oppenheimerData: DetailedDataPoint[] = [
-  { x: 1, value: -5, label: "Young Oppie, visions, poison apple", emotion: "Anxiety" },
-  { x: 2, value: 2, label: "Studying in Europe, quantum physics", emotion: "Growth" },
-  { x: 3, value: 4, label: "Meeting Jean Tatlock", emotion: "Passion" },
-  { x: 4, value: 6, label: "Teaching at Berkeley, theory expanison", emotion: "Ambition" },
-  { x: 5, value: 5, label: "Groves recruits Oppenheimer", emotion: "Opportunity" },
-  { x: 6, value: 7, label: "Building Los Alamos", emotion: "Creation" },
-  { x: 7, value: -2, label: "Security clearance issues begin", emotion: "Suspicion" },
-  { x: 8, value: -8, label: "Jean Tatlock's suicide", emotion: "Guilt" },
-  { x: 9, value: -3, label: "Tension mounting before Trinity", emotion: "Stress" },
-  { x: 10, value: -6, label: "The dark night before the test", emotion: "Dread" },
-  { x: 11, value: 8, label: "Trinity Test detonation", emotion: "Awe" },
-  { x: 12, value: -4, label: "Victory speech, visions of skin peeling", emotion: "Horror" },
-  { x: 13, value: -7, label: "Bombing of Hiroshima/Nagasaki", emotion: "Conflict" },
-  { x: 14, value: -5, label: "'Blood on my hands' with Truman", emotion: "Shame" },
-  { x: 15, value: -3, label: "Strauss animosity grows (Isotopes)", emotion: "Politics" },
-  { x: 16, value: 2, label: "Post-war fame", emotion: "Recognition" },
-  { x: 17, value: -4, label: "Opposing the H-Bomb", emotion: "Resistance" },
-  { x: 18, value: -9, label: "Security hearing begins, humiliation", emotion: "Persecution" },
-  { x: 19, value: -6, label: "Roger Robb's interrogation", emotion: "Exposure" },
-  { x: 20, value: 3, label: "Kitty testifies with strength", emotion: "Solidarity" },
-  { x: 21, value: -8, label: "Clearance revoked, betrayal", emotion: "Defeat" },
-  { x: 22, value: 5, label: "Hill testifies against Strauss", emotion: "Justice" },
-  { x: 23, value: 6, label: "Strauss denied cabinet position", emotion: "Vindication" },
-  { x: 24, value: -2, label: "Einstein conversation: We destroyed the world", emotion: "Acceptance" },
+  { x: 1, value: 0, label: "Prometheus stealing fire", emotion: "Foreboding" },
+  { x: 2, value: -2, label: "Poison apple / Anxiety", emotion: "Instability" },
+  { x: 3, value: 2, label: "Meeting Bohr / New Physics", emotion: "Inspiration" },
+  { x: 4, value: 1, label: "Teaching at Berkeley", emotion: "Passion" },
+  { x: 5, value: -1, label: "Jean Tatlock affair", emotion: "Complexity" },
+  { x: 6, value: 3, label: "Groves recruits Oppenheimer", emotion: "Opportunity" },
+  { x: 7, value: 4, label: "Building Los Alamos", emotion: "Creation" },
+  { x: 8, value: 0, label: "Recruiting scientists", emotion: "Camaraderie" },
+  { x: 9, value: -3, label: "Security clearance issues", emotion: "Suspicion" },
+  { x: 10, value: -5, label: "Jean Tatlock suicide", emotion: "Guilt" },
+  { x: 11, value: 1, label: "Trinity test preparations", emotion: "Focus" },
+  { x: 12, value: -2, label: "Teller's H-bomb distraction", emotion: "Conflict" },
+  { x: 13, value: 3, label: "The rain stops", emotion: "Relief" },
+  { x: 14, value: 8, label: "Trinity Test detonation", emotion: "Awe" },
+  { x: 15, value: 5, label: "Success speech / Hallucination", emotion: "Horror" },
+  { x: 16, value: -4, label: "Bombing of Hiroshima/Nagasaki", emotion: "Weight" },
+  { x: 17, value: -6, label: "Meeting Truman ('Crybaby')", emotion: "Humiliation" },
+  { x: 18, value: -3, label: "Strauss animosity grows", emotion: "Politics" },
+  { x: 19, value: -7, label: "Security clearance hearing", emotion: "Persecution" },
+  { x: 20, value: -8, label: "Betrayal by Teller", emotion: "Isolation" },
+  { x: 21, value: -9, label: "Clearance revoked", emotion: "Defeat" },
+  { x: 22, value: 2, label: "Einstein conversation revealed", emotion: "Perspective" },
+  { x: 23, value: 4, label: "Fermi Award / Rehabilitation", emotion: "Legacy" },
+  { x: 24, value: -5, label: "Chain reaction of destruction", emotion: "Prophecy" },
 ];
 
 export const movies: MovieKey[] = [
-    'Following',
-    'Memento',
-    'Insomnia',
-    'Batman Begins', 
-    'The Prestige', 
-    'The Dark Knight', 
-    'Inception', 
-    'The Dark Knight Rises', 
-    'Interstellar',
-    'Dunkirk',
-    'Tenet',
-    'Oppenheimer'
+  'Following',
+  'Memento',
+  'Insomnia',
+  'Batman Begins',
+  'The Prestige',
+  'The Dark Knight',
+  'Inception',
+  'The Dark Knight Rises',
+  'Interstellar',
+  'Dunkirk',
+  'Tenet',
+  'Oppenheimer'
 ];
 
-export const movieColors: Record<MovieKey, string> = {
-  'Following': '#f1f5f9', // Slate 100 (B&W feel)
-  'Memento': '#34d399', // Emerald 400
-  'Insomnia': '#7dd3fc', // Sky 300 (Ice Blue)
-  'Batman Begins': '#94a3b8', // Slate
-  'The Prestige': '#14b8a6', // Teal
-  'The Dark Knight': '#3b82f6', // Blue
-  'Inception': '#ef4444', // Red
-  'The Dark Knight Rises': '#f97316', // Orange
-  'Interstellar': '#6366f1', // Indigo
-  'Dunkirk': '#06b6d4', // Cyan
-  'Tenet': '#eab308', // Yellow
-  'Oppenheimer': '#a855f7', // Purple
+export const cardBackgroundSections = [
+  { section: 1, genre: "Neo-noir", color: "#000000" },
+  { section: 2, genre: "Thriller", color: "#708090" },
+  { section: 3, genre: "Mystery", color: "#4B0082" },
+  { section: 4, genre: "Psychological Thriller", color: "#800000" },
+  { section: 5, genre: "Crime", color: "#A52A2A" },
+  { section: 6, genre: "Superhero", color: "#FF0000" },
+  { section: 7, genre: "Action", color: "#FF4500" },
+  { section: 8, genre: "Drama", color: "#4682B4" },
+  { section: 9, genre: "Science Fiction", color: "#00FF7F" },
+  { section: 10, genre: "Adventure", color: "#FFA500" },
+  { section: 11, genre: "War", color: "#556B2F" },
+  { section: 12, genre: "Biographical Drama", color: "#8B4513" },
+  { section: 13, genre: "Historical", color: "#B8860B" },
+  { section: 14, genre: "Thriller", color: "#708090" },
+  { section: 15, genre: "Action", color: "#FF4500" },
+  { section: 16, genre: "Drama", color: "#4682B4" },
+  { section: 17, genre: "Science Fiction", color: "#00FF7F" },
+  { section: 18, genre: "Superhero", color: "#FF0000" },
+  { section: 19, genre: "Thriller", color: "#708090" },
+  { section: 20, genre: "Action", color: "#FF4500" },
+  { section: 21, genre: "Drama", color: "#4682B4" },
+  { section: 22, genre: "Science Fiction", color: "#00FF7F" }
+];
+
+// Helper to interpolate colors
+const interpolateColor = (color1: string, color2: string, factor: number) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color1);
+    const result2 = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color2);
+    if (!result || !result2) return color1;
+
+    const r1 = parseInt(result[1], 16);
+    const g1 = parseInt(result[2], 16);
+    const b1 = parseInt(result[3], 16);
+
+    const r2 = parseInt(result2[1], 16);
+    const g2 = parseInt(result2[2], 16);
+    const b2 = parseInt(result2[3], 16);
+
+    const r = Math.round(r1 + factor * (r2 - r1));
+    const g = Math.round(g1 + factor * (g2 - g1));
+    const b = Math.round(b1 + factor * (b2 - b1));
+
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 };
 
-export const getMovieData = (key: MovieKey): DetailedDataPoint[] => {
-    switch (key) {
-        case 'Following': return followingData;
-        case 'Memento': return mementoData;
-        case 'Insomnia': return insomniaData;
-        case 'Batman Begins': return batmanBeginsData;
-        case 'The Prestige': return prestigeData;
-        case 'The Dark Knight': return darkKnightData;
-        case 'Inception': return inceptionMovieData;
-        case 'The Dark Knight Rises': return darkKnightRisesData;
-        case 'Interstellar': return interstellarMovieData;
-        case 'Dunkirk': return dunkirkData;
-        case 'Tenet': return tenetData;
-        case 'Oppenheimer': return oppenheimerData;
-        default: return interstellarMovieData;
-    }
-}
+const getRatingColor = (rating: number): string => {
+    // Range roughly 7.2 to 9.0
+    // Tone: Cool (Blue) -> Cyan -> Green -> Yellow -> Orange -> Red (Hot/High Intensity)
+    // Scale:
+    // 7.2 - 7.5: Blue to Cyan
+    // 7.5 - 8.0: Cyan to Green
+    // 8.0 - 8.5: Green to Yellow
+    // 8.5 - 9.0: Yellow to Red/Purple
+    
+    if (rating <= 7.2) return '#3b82f6'; // Blue 500
+    if (rating >= 9.0) return '#b91c1c'; // Red 700
 
-export const getMovieYear = (key: MovieKey): string => {
-    switch (key) {
-        case 'Following': return '1998';
-        case 'Memento': return '2000';
-        case 'Insomnia': return '2002';
-        case 'Batman Begins': return '2005';
-        case 'The Prestige': return '2006';
-        case 'The Dark Knight': return '2008';
-        case 'Inception': return '2010';
-        case 'The Dark Knight Rises': return '2012';
-        case 'Interstellar': return '2014';
-        case 'Dunkirk': return '2017';
-        case 'Tenet': return '2020';
-        case 'Oppenheimer': return '2023';
-        default: return '';
+    if (rating < 7.5) {
+        // 7.2 to 7.5
+        const t = (rating - 7.2) / 0.3;
+        return interpolateColor('#3b82f6', '#06b6d4', t); // Blue -> Cyan
+    } else if (rating < 8.0) {
+        // 7.5 to 8.0
+        const t = (rating - 7.5) / 0.5;
+        return interpolateColor('#06b6d4', '#22c55e', t); // Cyan -> Green
+    } else if (rating < 8.5) {
+        // 8.0 to 8.5
+        const t = (rating - 8.0) / 0.5;
+        return interpolateColor('#22c55e', '#eab308', t); // Green -> Yellow
+    } else {
+        // 8.5 to 9.0
+        const t = (rating - 8.5) / 0.5;
+        return interpolateColor('#eab308', '#ef4444', t); // Yellow -> Red
     }
-}
+};
+
+export const movieColors: Record<MovieKey, string> = movies.reduce((acc, movie) => {
+    const rating = movieMetadata[movie].imdbRating;
+    acc[movie] = getRatingColor(rating);
+    return acc;
+}, {} as Record<MovieKey, string>);
+
+export const getMovieData = (movie: MovieKey): DetailedDataPoint[] => {
+  switch (movie) {
+    case 'Following': return followingData;
+    case 'Memento': return mementoData;
+    case 'Insomnia': return insomniaData;
+    case 'Batman Begins': return batmanBeginsData;
+    case 'The Prestige': return thePrestigeData;
+    case 'The Dark Knight': return theDarkKnightData;
+    case 'Inception': return inceptionData;
+    case 'The Dark Knight Rises': return darkKnightRisesData;
+    case 'Interstellar': return interstellarData;
+    case 'Dunkirk': return dunkirkData;
+    case 'Tenet': return tenetData;
+    case 'Oppenheimer': return oppenheimerData;
+    default: return inceptionData;
+  }
+};
+
+export const getMovieYear = (movie: MovieKey): number => {
+    return movieMetadata[movie]?.year || 0;
+};

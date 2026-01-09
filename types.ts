@@ -23,6 +23,13 @@ export type MovieKey =
   | 'Tenet' 
   | 'Oppenheimer';
 
+export interface MovieMetadata {
+  year: number;
+  boxOffice: number; // in USD
+  imdbRating: number;
+  genre: string;
+}
+
 export interface Margin {
   top: number;
   right: number;
