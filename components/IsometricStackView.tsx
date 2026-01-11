@@ -12,10 +12,8 @@ const IsometricStackView: React.FC = () => {
 
     const handleWheel = (e: WheelEvent) => {
         const now = Date.now();
-        // Slightly lower debounce for smoother feel
         if (now - lastScrollTime.current < 50) return; 
         
-        // Threshold to prevent accidental micro-scrolls
         if (Math.abs(e.deltaY) > 5) {
             lastScrollTime.current = now;
             if (e.deltaY > 0) {
@@ -34,18 +32,16 @@ const IsometricStackView: React.FC = () => {
         return () => container?.removeEventListener('wheel', handleWheel);
     }, []);
 
-    // Helper to generate the conic gradient string for a movie
     const getCardGradient = (movie: MovieKey) => {
-        const genres = movieMetadata[movie].genre.split(', ');
+        const metadata = movieMetadata[movie];
+        if (!metadata) return 'none';
+        const genres = metadata.genre.split(', ');
         
         const stops = cardBackgroundSections.map((section, index) => {
             const startAngle = (index / 22) * 360;
             const endAngle = ((index + 1) / 22) * 360;
-            
-            // Check if the movie has this genre
             const isActive = genres.includes(section.genre);
             const color = isActive ? section.color : 'transparent';
-            
             return `${color} ${startAngle}deg ${endAngle}deg`;
         });
 
@@ -53,13 +49,27 @@ const IsometricStackView: React.FC = () => {
     };
 
     return (
-        <div ref={containerRef} className="w-full h-screen flex items-center justify-center overflow-hidden relative bg-[#e0e0ed]">
+        <div ref={containerRef} style={{ 
+            width: '100%', 
+            height: '100vh', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            overflow: 'hidden', 
+            position: 'relative', 
+            backgroundColor: 'var(--bg-main)' 
+        }}>
             
             {/* 3D Scene Container */}
             <div 
-                className="relative w-full h-full flex items-center justify-center"
                 style={{
-                    perspective: '2000px', // Deep perspective
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    perspective: '2000px',
                     transformStyle: 'preserve-3d'
                 }}
             >
@@ -69,56 +79,44 @@ const IsometricStackView: React.FC = () => {
                     const isActive = offset === 0;
                     const color = movieColors[movie];
                     const metadata = movieMetadata[movie];
+                    if (!metadata) return null;
                     const genresList = metadata.genre.split(', ');
 
-                    // Get colors for the line stroke gradient based on genre list
                     const genreColors = genresList.map(genre => {
                         const section = cardBackgroundSections.find(s => s.genre === genre);
-                        return section ? section.color : movieColors[movie];
+                        return section ? section.color : color;
                     });
                     
-                    // --- Z-Axis Stack Transforms ---
-                    
-                    // Z-Spacing: How far back each card is push
                     const spacingZ = -400; 
-                    
-                    // X-Offset: Slight shift to right to see the edge of the card behind
                     const spacingX = 40; 
                     
                     let translateX = offset * spacingX;
-                    let translateY = 0; // Keep them on the same floor level
+                    let translateY = 0; 
                     let translateZ = offset * spacingZ;
                     
-                    // Rotation: Standing up but angled for Isometric look
-                    // -15deg Y makes it face slightly left, good for seeing the stack on the right
                     const rotateX = 10; 
                     const rotateY = -15;
-                    const rotateZ = 0;
                     
                     let scale = 1;
                     let opacity = 1;
 
-                    // Active Card Logic
                     if (isActive) {
                         scale = 1.05;
                         opacity = 1;
                     } else if (offset > 0) {
-                        // Future cards (Background)
                         opacity = Math.max(0.2, 1 - offset * 0.15);
                         scale = 1; 
                     } else {
-                        // Past cards (offset < 0)
-                        translateZ = 800 + Math.abs(offset) * 400; // Fly past camera
-                        opacity = 0; // Invisible
-                        translateY = -200; // Fly up
+                        translateZ = 800 + Math.abs(offset) * 400; 
+                        opacity = 0; 
+                        translateY = -200; 
                     }
 
-                    // Visibility optimization
                     if (offset > 8) opacity = 0;
 
                     const cardStyle: React.CSSProperties = {
-                        transform: `translate3d(${translateX}px, ${translateY}px, ${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale})`,
-                        zIndex: 100 - index, // Ensure front cards overlap back cards correctly
+                        transform: `translate3d(${translateX}px, ${translateY}px, ${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`,
+                        zIndex: 100 - index,
                         opacity: opacity,
                         transition: 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s ease',
                         pointerEvents: isActive ? 'auto' : 'none', 
@@ -135,84 +133,71 @@ const IsometricStackView: React.FC = () => {
                         <div 
                             key={movie}
                             style={cardStyle}
-                            className="transition-all duration-500"
                             onClick={() => setActiveIndex(index)}
                         >
-                            {/* Inner wrapper handles visual style and entrance animation to avoid 3D transform conflict */}
-                            <div className={`
-                                w-full h-full flex flex-col gap-4 p-8 
-                                rounded-3xl border 
-                                transition-all duration-500 animate-card-entry relative overflow-hidden
-                                ${isActive 
-                                    ? 'bg-white border-white/60 shadow-2xl animate-strobe' 
-                                    : 'bg-slate-50 border-slate-200/50 shadow-xl grayscale-[0.2]'
-                                }
-                            `}>
-                                {/* Conic Gradient Background */}
+                            <div className={`movie-card animate-card-entry ${isActive ? 'animate-strobe' : ''}`} style={{ 
+                                width: '100%', 
+                                height: '100%',
+                                backgroundColor: isActive ? 'white' : 'var(--slate-50)',
+                                opacity: isActive ? 1 : 0.9,
+                                filter: isActive ? 'none' : 'grayscale(0.2)'
+                            }}>
                                 <div 
-                                    className="absolute inset-0 opacity-60 pointer-events-none z-0 scale-150"
+                                    className="card-gradient-bg"
                                     style={{
                                         background: gradientBackground,
-                                        filter: 'blur(60px)', // Heavy blur for mesh effect
+                                        transform: 'scale(1.5)',
+                                        filter: 'blur(60px)',
                                     }}
                                 />
                                 
-                                <div className="absolute inset-0 bg-white/40 z-0 pointer-events-none backdrop-blur-[2px]"></div>
+                                <div className="card-glass-overlay"></div>
+                                {isActive && <div className="card-border-shine"></div>}
 
-                                {/* Border Shine - Only render when active to replay animation */}
-                                {isActive && <div className="card-border-shine z-50"></div>}
-
-                                {/* Card Header */}
-                                <div className="flex flex-col gap-3 border-b border-slate-200/50 pb-4 select-none relative z-10">
+                                <div className="flex flex-col gap-3 relative z-10" style={{ borderBottom: '1px solid var(--slate-200)', paddingBottom: '1rem', userSelect: 'none' }}>
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <div className="text-xs font-bold text-slate-500 tracking-widest uppercase mb-1">Movie Arc</div>
-                                            <h2 className={`text-4xl font-bold leading-tight ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>{movie}</h2>
+                                            <div style={{ fontSize: '0.625rem', fontWeight: 700, color: 'var(--slate-500)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Movie Arc</div>
+                                            <h2 style={{ fontSize: '2.25rem', fontWeight: 700, color: isActive ? 'var(--slate-900)' : 'var(--slate-600)', lineHeight: 1.1 }}>{movie}</h2>
                                         </div>
-                                        <div className="text-2xl font-bold text-slate-400">{getMovieYear(movie)}</div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-400)' }}>{getMovieYear(movie)}</div>
                                     </div>
                                     
-                                    {/* Metadata Pills Container */}
                                     <div className="flex flex-col gap-2">
-                                        {/* Row 1: Metrics */}
-                                        <div className="flex flex-wrap gap-2 items-center">
-                                            {/* Box Office Pill */}
-                                            <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 shadow-sm backdrop-blur-[2px] bg-opacity-80">
+                                        <div className="flex" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+                                            <div className="pill-stat pill-boxoffice">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <line x1="12" y1="1" x2="12" y2="23"></line>
                                                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                                                 </svg>
-                                                <span className="text-xs font-bold font-mono">
+                                                <span style={{ fontSize: '0.75rem', fontWeight: 700, fontFamily: 'monospace' }}>
                                                     <AnimatedCounter value={metadata.boxOffice} type="currency" />
                                                 </span>
                                             </div>
 
-                                            {/* IMDb Pill */}
-                                            <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-600 shadow-sm backdrop-blur-[2px] bg-opacity-80">
+                                            <div className="pill-stat pill-imdb">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                                                 </svg>
-                                                <span className="text-xs font-bold font-mono">
+                                                <span style={{ fontSize: '0.75rem', fontWeight: 700, fontFamily: 'monospace' }}>
                                                     <AnimatedCounter value={metadata.imdbRating} type="rating" />
                                                 </span>
                                             </div>
                                         </div>
 
-                                        {/* Row 2: Genres */}
-                                        <div className="flex flex-wrap gap-2 items-center">
+                                        <div className="flex" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
                                             {genresList.map(genre => {
-                                                // Find color for this genre
                                                 const section = cardBackgroundSections.find(s => s.genre === genre);
-                                                const pillColor = section ? section.color : '#64748b'; // default slate
-                                                
+                                                const pillColor = section ? section.color : '#64748b';
                                                 return (
                                                     <div 
                                                         key={genre}
-                                                        className="px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-[1px]"
+                                                        className="pill-genre"
                                                         style={{
-                                                            backgroundColor: `${pillColor}15`, // 15 = ~8% opacity
-                                                            borderColor: `${pillColor}50`,    // 50 = ~30% opacity
-                                                            color: pillColor
+                                                            backgroundColor: `${pillColor}15`,
+                                                            borderColor: `${pillColor}50`,
+                                                            color: pillColor,
+                                                            fontSize: '10px'
                                                         }}
                                                     >
                                                         {genre}
@@ -223,9 +208,7 @@ const IsometricStackView: React.FC = () => {
                                     </div>
                                 </div>
                                 
-                                {/* Chart Area - Solid background to exclude gradient from this section */}
-                                <div className="flex-1 relative bg-slate-50/90 backdrop-blur-sm rounded-xl border border-slate-100 shadow-inner overflow-hidden z-10">
-                                    {/* Only render chart if visible/close to conserve resources */}
+                                <div className="chart-viewport" style={{ flex: 1, backgroundColor: 'rgba(248, 250, 252, 0.9)', zIndex: 10 }}>
                                     {(offset >= 0 && offset <= 2) && (
                                         <LineChart 
                                             id={`chart-${movie.replace(/\s+/g, '-')}`}
@@ -247,9 +230,8 @@ const IsometricStackView: React.FC = () => {
             </div>
 
             {/* Right Side Vertical Legend */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50">
+            <div style={{ position: 'absolute', right: '2rem', top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: '1rem', zIndex: 50 }}>
                 {movies.map((movie, index) => {
-                    // Calculate genre gradient for legend dot
                     const genres = movieMetadata[movie].genre.split(', ');
                     const genreColors = genres.map(g => cardBackgroundSections.find(s => s.genre === g)?.color || '#94a3b8');
                     const gradientStyle = genreColors.length > 1 
@@ -259,22 +241,37 @@ const IsometricStackView: React.FC = () => {
                     return (
                         <div 
                             key={movie}
-                            className={`flex items-center gap-3 cursor-pointer transition-all duration-300 group ${index === activeIndex ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-40 hover:opacity-80 hover:translate-x-2'}`}
+                            style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '0.75rem', 
+                                cursor: 'pointer', 
+                                transition: 'all 0.3s', 
+                                opacity: index === activeIndex ? 1 : 0.4,
+                                transform: index === activeIndex ? 'translateX(0)' : 'translateX(10px)'
+                            }}
                             onClick={() => setActiveIndex(index)}
                         >
                              <div 
-                                className={`w-3 h-3 rounded-full transition-transform duration-300 shadow-sm ${index === activeIndex ? 'scale-150 ring-2 ring-white' : 'group-hover:scale-125'}`} 
-                                style={{ background: gradientStyle }}
+                                style={{ 
+                                    width: '0.75rem', 
+                                    height: '0.75rem', 
+                                    borderRadius: '9999px', 
+                                    background: gradientStyle,
+                                    boxShadow: 'var(--shadow-md)',
+                                    transform: index === activeIndex ? 'scale(1.5)' : 'scale(1)',
+                                    transition: 'transform 0.3s'
+                                }} 
                              ></div>
-                             <span className={`text-sm font-bold tracking-wide ${index === activeIndex ? 'text-slate-800' : 'text-slate-500'}`}>{movie}</span>
+                             <span style={{ fontSize: '0.875rem', fontWeight: 700, color: index === activeIndex ? 'var(--slate-800)' : 'var(--slate-500)', whiteSpace: 'nowrap' }}>{movie}</span>
                         </div>
                     );
                 })}
             </div>
 
             {/* Instructions */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-slate-400 text-sm font-medium tracking-wide animate-pulse pointer-events-none select-none">
-                Scroll to Move Through Time
+            <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', color: 'var(--slate-400)', fontSize: '0.875rem', fontWeight: 500, letterSpacing: '0.05em', userSelect: 'none', pointerEvents: 'none' }}>
+                SCROLL TO NAVIGATE CHRONOLOGY
             </div>
         </div>
     );
