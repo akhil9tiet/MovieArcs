@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovieArcs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0f172a; /* Slate 900 */
+        color: #e2e8f0;
+      }
+      /* Custom Animation for Card Entrance */
+      @keyframes wipe-in-right-scale {
+        0% {
+          opacity: 0;
+          transform: scale(1.1);
+          clip-path: inset(0 0 0 100%); 
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          clip-path: inset(0 0 0 0%);
+        }
+      }
+      /* Strobe Lighting Animation for 3D Cards - Refined for Golden Glow */
+      @keyframes strobe-flash {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+          border-color: rgba(255, 255, 255, 0.4);
+        }
+        20% {
+          box-shadow: 0 0 50px 10px rgba(255, 215, 0, 0.4); /* Golden glow */
+          border-color: rgba(255, 223, 0, 1);
+        }
+        100% {
+          box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.15);
+          border-color: rgba(255, 255, 255, 0.6);
+        }
+      }
+      /* Title Transform */
+      @keyframes title-slide-transform {
+        0% {
+          transform: translate(40px, 20px) scale(1.1);
+        }
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+      }
+      /* Title Opacity */
+      @keyframes title-fade {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      /* Legend Animations */
+      @keyframes slide-up-transform {
+        0% { transform: translateY(40px); }
+        100% { transform: translateY(0); }
+      }
+      @keyframes fade-in-ease-in {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      /* Border Shine Animation - Simulating a trace - Now Slower and Golden */
+      @keyframes border-flow {
+        0% {
+          background-position: 200% 0;
+          opacity: 0;
+        }
+        15% {
+          opacity: 1;
+        }
+        85% {
+          opacity: 1;
+        }
+        100% {
+          background-position: -200% 0;
+          opacity: 0;
+        }
+      }
+      .animate-card-entry {
+        animation: wipe-in-right-scale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transform-origin: center center;
+        will-change: transform, clip-path, opacity;
+      }
+      .animate-strobe {
+        animation: strobe-flash 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        will-change: box-shadow, border-color;
+      }
+      .animate-title-slide {
+        animation: 
+            title-slide-transform 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+            title-fade 0.6s ease-out forwards;
+        transform-origin: center left;
+        will-change: transform, opacity;
+      }
+      .animate-legend-entry {
+        animation: 
+          slide-up-transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+          fade-in-ease-in 1.2s ease-in forwards;
+        will-change: transform, opacity;
+      }
+      .card-border-shine {
+        position: absolute;
+        inset: 0;
+        border-radius: 1.5rem;
+        padding: 3px; /* Slightly thicker for more impact */
+        background: linear-gradient(
+          90deg, 
+          transparent 0%, 
+          transparent 40%, 
+          rgba(255, 215, 0, 1) 50%, /* Vivid Gold */
+          transparent 60%, 
+          transparent 100%
+        );
+        background-size: 200% 100%;
+        
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        
+        pointer-events: none;
+        animation: border-flow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        z-index: 50;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.5);
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(71, 85, 105, 0.5);
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.5);
+      }
+    </style>
+    <script type="module" crossorigin src="/movieArcs/assets/index-ByUfFbcw.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
