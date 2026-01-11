@@ -1,53 +1,42 @@
-name: Deploy MovieArcs
+name: Deploy MovieArcs to GitHub Pages
 
 on:
   push:
     branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout MovieArcs repo
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          repository: akhil9tiet/MovieArcs
-          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build project
         run: npm run build
 
-      - name: Checkout akhil9tiet.github.io
-        uses: actions/checkout@v4
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          repository: akhil9tiet/akhil9tiet.github.io
-          path: deploy-repo
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Sync movieArcs directory
-        run: |
-          cd deploy-repo
-          rm -rf movieArcs
-          mkdir -p movieArcs
-          cp -r ../dist/* movieArcs/
-
-      - name: Commit and push to akhil9tiet.github.io
-        run: |
-          cd deploy-repo
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
           git add -A
           git commit -m "Deploy MovieArcs from $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
           git push
